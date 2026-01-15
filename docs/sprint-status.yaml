@@ -1,0 +1,89 @@
+# Sprint Status Tracking
+# Generated: 2026-01-14T19:00:00Z
+# Project: bloodbank-contracts
+
+version: "6.0.0"
+project_name: "bloodbank-contracts"
+project_level: 1
+current_sprint: 1
+sprint_plan_path: "docs/sprint-plan-bloodbank-contracts-2026-01-14.md"
+
+sprints:
+  - sprint_number: 1
+    start_date: "2026-01-14"
+    end_date: "2026-01-28"
+    capacity_points: 30
+    committed_points: 33
+    completed_points: 0
+    status: "not_started"
+    goal: "Establish complete contract infrastructure with TheBoard events, automated generation, CI validation, and documentation"
+    stories:
+      - story_id: "STORY-001"
+        title: "Repository Infrastructure"
+        points: 2
+        priority: "must_have"
+        status: "not_started"
+        assigned_to: "Jarad DeLorenzo"
+        dependencies: []
+      - story_id: "STORY-002"
+        title: "Common Base Schemas"
+        points: 3
+        priority: "must_have"
+        status: "not_started"
+        assigned_to: "Jarad DeLorenzo"
+        dependencies: ["STORY-001"]
+      - story_id: "STORY-003"
+        title: "TheBoard Event Schemas"
+        points: 5
+        priority: "must_have"
+        status: "not_started"
+        assigned_to: "Jarad DeLorenzo"
+        dependencies: ["STORY-002"]
+      - story_id: "STORY-004"
+        title: "Python Generation Pipeline"
+        points: 5
+        priority: "must_have"
+        status: "not_started"
+        assigned_to: "Jarad DeLorenzo"
+        dependencies: ["STORY-002", "STORY-003"]
+      - story_id: "STORY-005"
+        title: "TypeScript Generation Pipeline"
+        points: 5
+        priority: "must_have"
+        status: "not_started"
+        assigned_to: "Jarad DeLorenzo"
+        dependencies: ["STORY-002", "STORY-003"]
+      - story_id: "STORY-006"
+        title: "Contract Test Framework"
+        points: 5
+        priority: "must_have"
+        status: "not_started"
+        assigned_to: "Jarad DeLorenzo"
+        dependencies: ["STORY-004", "STORY-005"]
+      - story_id: "STORY-007"
+        title: "CI Integration"
+        points: 5
+        priority: "must_have"
+        status: "not_started"
+        assigned_to: "Jarad DeLorenzo"
+        dependencies: ["STORY-004", "STORY-005", "STORY-006"]
+      - story_id: "STORY-008"
+        title: "Event Catalog Documentation"
+        points: 3
+        priority: "should_have"
+        status: "not_started"
+        assigned_to: "Jarad DeLorenzo"
+        dependencies: ["STORY-003"]
+
+velocity:
+  sprint_1: null  # Will be filled when sprint completes
+  rolling_average: null
+
+team:
+  size: 1
+  sprint_length_weeks: 2
+  capacity_per_sprint: 30
+  members:
+    - name: "Jarad DeLorenzo"
+      role: "Senior Engineer"
+      productive_hours_per_day: 6
