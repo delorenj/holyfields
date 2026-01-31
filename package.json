@@ -1,0 +1,28 @@
+{
+  "name": "holyfields",
+  "version": "0.1.0",
+  "description": "Event schema registry and contract system for 33GOD ecosystem",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
+    "generate": "bun run scripts/generate_typescript.sh",
+    "validate": "bun run scripts/validate_schemas.sh"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^3.0.1",
+    "json-schema-to-zod": "^2.1.0",
+    "typescript": "^5.3.3",
+    "vitest": "^1.1.0",
+    "@vitest/coverage-v8": "^1.1.0",
+    "zod": "^3.22.4"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "bun": ">=1.0.0"
+  }
+}

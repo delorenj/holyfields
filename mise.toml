@@ -1,0 +1,57 @@
+[tools]
+python = "3.12"
+node = "20"
+
+[tasks.install]
+description = "Install all dependencies"
+run = """
+#!/usr/bin/env bash
+set -e
+echo "Installing Python dependencies..."
+uv sync
+echo "Installing TypeScript dependencies..."
+bun install
+"""
+
+[tasks."generate:python"]
+description = "Generate Python Pydantic models from JSON Schema"
+run = "bash scripts/generate_python.sh"
+
+[tasks."generate:typescript"]
+description = "Generate TypeScript Zod schemas and types from JSON Schema"
+run = "bash scripts/generate_typescript.sh"
+
+[tasks."generate:all"]
+description = "Generate all language artifacts"
+depends = ["generate:python", "generate:typescript"]
+
+[tasks."validate:schemas"]
+description = "Validate all JSON schemas"
+run = "bash scripts/validate_schemas.sh"
+
+[tasks."test:python"]
+description = "Run Python contract tests"
+run = "uv run pytest"
+
+[tasks."test:typescript"]
+description = "Run TypeScript contract tests"
+run = "bun test"
+
+[tasks."test:all"]
+description = "Run all contract tests"
+depends = ["test:python", "test:typescript"]
+
+[tasks.typecheck]
+description = "Run type checking for generated code"
+run = """
+#!/usr/bin/env bash
+set -e
+echo "Type checking Python..."
+uv run mypy generated/python
+echo "Type checking TypeScript..."
+bun run typecheck
+"""
+
+[tasks.ci]
+description = "Run full CI validation"
+depends = ["validate:schemas", "generate:all", "typecheck", "test:all"]

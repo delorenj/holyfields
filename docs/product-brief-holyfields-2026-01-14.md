@@ -1,4 +1,4 @@
-# Product Brief: bloodbank-contracts
+# Product Brief: holyfields
 
 **Date:** 2026-01-14
 **Author:** Jarad DeLorenzo
@@ -52,7 +52,7 @@ Future Letta 'Director of Engineering' agent for cross-repo workflow orchestrati
 
 ### Proposed Solution
 
-bloodbank-contracts as a centralized event schema registry using JSON Schema as source of truth, with automated generation of language-specific artifacts (Python Pydantic, TypeScript Zod/types, future Rust serde structs). Contract validation integrated into component CI pipelines catches violations before runtime. Per-component semantic versioning enables parallel development without coordination bottlenecks.
+Holyfields as a centralized event schema registry using JSON Schema as source of truth, with automated generation of language-specific artifacts (Python Pydantic, TypeScript Zod/types, future Rust serde structs). Contract validation integrated into component CI pipelines catches violations before runtime. Per-component semantic versioning enables parallel development without coordination bottlenecks.
 
 ### Key Features
 
@@ -210,4 +210,4 @@ Unblock TheBoard/TheBoardroom integration as priority. Get walking skeleton depl
 
 **This document was created using BMAD Method v6 - Phase 1 (Analysis)**
 
-*To continue: Run `/workflow-status` to see your progress and next recommended workflow.*
+_To continue: Run `/workflow-status` to see your progress and next recommended workflow._

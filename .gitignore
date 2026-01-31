@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+*.so
+.venv/
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# TypeScript/Node
+node_modules/
+dist/
+*.tsbuildinfo
+coverage/
+
+# Generated artifacts (decision: commit generated code for now)
+# generated/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+debug.log
+
+# Environment
+.env
+.env.local
+
+# Mise
+.mise.local.toml

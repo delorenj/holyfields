@@ -1,0 +1,131 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/whisperlivekit/events/transcription_completed.json",
+  "title": "Transcription Completed Event",
+  "description": "Emitted when WhisperLiveKit completes transcription of an audio segment. This event triggers the voice-to-response pipeline by notifying Tonny agent and other consumers.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../common/schemas/base_voice_event.json"
+    }
+  ],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "whisperlivekit.transcription.completed",
+      "description": "Event type discriminator"
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 10000,
+      "description": "Transcribed text from the audio segment"
+    },
+    "audio_metadata": {
+      "type": "object",
+      "description": "Metadata about the audio that was transcribed",
+      "properties": {
+        "duration_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Duration of the audio segment in milliseconds"
+        },
+        "sample_rate": {
+          "type": "integer",
+          "minimum": 8000,
+          "maximum": 48000,
+          "description": "Audio sample rate in Hz (e.g., 16000)"
+        },
+        "channels": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2,
+          "description": "Number of audio channels (1=mono, 2=stereo)"
+        },
+        "bit_depth": {
+          "type": "integer",
+          "enum": [8, 16, 24, 32],
+          "description": "Audio bit depth"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["pcm", "wav", "mp3", "opus"],
+          "description": "Audio format"
+        },
+        "language": {
+          "type": ["string", "null"],
+          "description": "Detected or specified language code (ISO 639-1, e.g., 'en', 'es')",
+          "pattern": "^[a-z]{2}$"
+        },
+        "confidence": {
+          "type": ["number", "null"],
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Transcription confidence score (0.0 to 1.0)"
+        }
+      },
+      "required": ["duration_ms", "sample_rate", "channels", "format"],
+      "additionalProperties": true
+    },
+    "is_final": {
+      "type": "boolean",
+      "description": "Whether this is a final transcription (true) or partial/streaming result (false)",
+      "default": true
+    },
+    "segment_id": {
+      "type": ["string", "null"],
+      "description": "Unique identifier for this audio segment within the session"
+    }
+  },
+  "required": [
+    "event_type",
+    "timestamp",
+    "session_id",
+    "source",
+    "target",
+    "text",
+    "audio_metadata",
+    "is_final"
+  ],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "event_type": "whisperlivekit.transcription.completed",
+      "timestamp": "2026-01-27T10:30:15.234Z",
+      "session_id": "550e8400-e29b-41d4-a716-446655440000",
+      "source": "whisperlivekit",
+      "target": "tonny",
+      "text": "Hey Tonny, what's the weather like today?",
+      "audio_metadata": {
+        "duration_ms": 2500,
+        "sample_rate": 16000,
+        "channels": 1,
+        "bit_depth": 16,
+        "format": "pcm",
+        "language": "en",
+        "confidence": 0.95
+      },
+      "is_final": true,
+      "segment_id": "seg_001"
+    },
+    {
+      "event_type": "whisperlivekit.transcription.completed",
+      "timestamp": "2026-01-27T10:32:48.567Z",
+      "session_id": "660f9511-f30c-42e5-b827-557766551111",
+      "source": "whisperlivekit",
+      "target": "candybar",
+      "text": "Show me the current tasks",
+      "audio_metadata": {
+        "duration_ms": 1800,
+        "sample_rate": 16000,
+        "channels": 1,
+        "bit_depth": 16,
+        "format": "pcm",
+        "language": "en",
+        "confidence": 0.88
+      },
+      "is_final": true,
+      "segment_id": "seg_002"
+    }
+  ]
+}

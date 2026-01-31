@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/theboard/events/comment_extracted.json",
+  "title": "Comment Extracted Event",
+  "description": "Emitted when comments are extracted from agent response. Payload contains comment metadata for analytics.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../common/schemas/base_event.json"
+    }
+  ],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "meeting.comment_extracted",
+      "description": "Event type discriminator"
+    },
+    "round_num": {
+      "$ref": "../../common/schemas/types.json#/$defs/round_number",
+      "description": "Round number when comment was extracted"
+    },
+    "agent_name": {
+      "$ref": "../../common/schemas/types.json#/$defs/agent_name",
+      "description": "Agent who authored the comment"
+    },
+    "comment_text": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 5000,
+      "description": "Extracted comment text"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["question", "concern", "idea", "observation", "recommendation", "clarification", "other"],
+      "description": "Comment category classified by notetaker agent"
+    },
+    "novelty_score": {
+      "$ref": "../../common/schemas/types.json#/$defs/novelty_score",
+      "description": "Novelty score (0.0 = repetitive, 1.0 = novel)"
+    }
+  },
+  "required": [
+    "event_type",
+    "timestamp",
+    "meeting_id",
+    "round_num",
+    "agent_name",
+    "comment_text",
+    "category",
+    "novelty_score"
+  ],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "event_type": "meeting.comment_extracted",
+      "timestamp": "2024-01-15T10:31:15Z",
+      "meeting_id": "550e8400-e29b-41d4-a716-446655440000",
+      "round_num": 1,
+      "agent_name": "Alice",
+      "comment_text": "We should consider alignment with human values as a core constraint.",
+      "category": "recommendation",
+      "novelty_score": 0.92
+    }
+  ]
+}

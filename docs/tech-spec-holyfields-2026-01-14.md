@@ -1,4 +1,4 @@
-# Technical Specification: bloodbank-contracts
+# Technical Specification: Holyfields
 
 **Date:** 2026-01-14
 **Author:** Jarad DeLorenzo
@@ -11,10 +11,11 @@
 
 ## Document Overview
 
-This Technical Specification provides focused technical planning for bloodbank-contracts. It is designed for smaller projects (Level 0-1) that need clear requirements without heavyweight PRD overhead.
+This Technical Specification provides focused technical planning for Holyfields. It is designed for smaller projects (Level 0-1) that need clear requirements without heavyweight PRD overhead.
 
 **Related Documents:**
-- Product Brief: docs/product-brief-bloodbank-contracts-2026-01-14.md
+
+- Product Brief: docs/product-brief-holyfields-2026-01-14.md
 
 ---
 
@@ -26,7 +27,7 @@ When developing TheBoard (Python backend) and TheBoardroom (TypeScript frontend)
 
 ### Proposed Solution
 
-bloodbank-contracts as a centralized event schema registry using JSON Schema as source of truth, with automated generation of language-specific artifacts (Python Pydantic, TypeScript Zod/types, future Rust serde structs). Contract validation integrated into component CI pipelines catches violations before runtime. Per-component semantic versioning enables parallel development without coordination bottlenecks.
+Holyfields as a centralized event schema registry using JSON Schema as source of truth, with automated generation of language-specific artifacts (Python Pydantic, TypeScript Zod/types, future Rust serde structs). Contract validation integrated into component CI pipelines catches violations before runtime. Per-component semantic versioning enables parallel development without coordination bottlenecks.
 
 ---
 
@@ -86,7 +87,7 @@ bloodbank-contracts as a centralized event schema registry using JSON Schema as 
 ### Architecture Overview
 
 ```
-bloodbank-contracts/
+Holyfields/
 ├── common/                    # Shared base types, enums
 │   └── schemas/              # JSON Schema definitions
 │       ├── base_envelope.json
@@ -136,6 +137,7 @@ bloodbank-contracts/
 ```
 
 **Data Flow:**
+
 1. Developer defines event in JSON Schema (e.g., `theboard/events/meeting_created.json`)
 2. Pre-commit hook validates schema structure before commit
 3. On push, GitHub Actions triggers validation + code generation
@@ -145,6 +147,7 @@ bloodbank-contracts/
 7. Consuming services import generated artifacts as dependencies
 
 **Versioning Strategy:**
+
 - Each component directory (theboard/, theboardroom/) has independent semantic versioning
 - Schema changes increment version in component metadata file
 - Breaking changes (field removal, type change) increment major version
@@ -154,32 +157,57 @@ bloodbank-contracts/
 ### Data Model (if applicable)
 
 **Base Event Envelope (common/schemas/base_envelope.json):**
+
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
   "properties": {
-    "event_type": { "type": "string", "description": "Event identifier (e.g., theboard.meeting.created)" },
-    "event_id": { "type": "string", "format": "uuid", "description": "Unique event ID" },
-    "timestamp": { "type": "string", "format": "date-time", "description": "ISO 8601 timestamp" },
-    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$", "description": "Schema version (semver)" },
-    "producer": { "type": "string", "description": "Service that emitted event" },
+    "event_type": {
+      "type": "string",
+      "description": "Event identifier (e.g., theboard.meeting.created)"
+    },
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique event ID"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Schema version (semver)"
+    },
+    "producer": {
+      "type": "string",
+      "description": "Service that emitted event"
+    },
     "payload": { "type": "object", "description": "Event-specific data" }
   },
-  "required": ["event_type", "event_id", "timestamp", "version", "producer", "payload"]
+  "required": [
+    "event_type",
+    "event_id",
+    "timestamp",
+    "version",
+    "producer",
+    "payload"
+  ]
 }
 ```
 
 **Example TheBoard Event (theboard/events/meeting_created.json):**
+
 ```json
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://bloodbank-contracts/theboard/events/meeting_created.json",
+  "$id": "https://holyfields/theboard/events/meeting_created.json",
   "title": "MeetingCreated",
   "description": "Emitted when a new meeting is initialized",
-  "allOf": [
-    { "$ref": "../../common/schemas/base_envelope.json" }
-  ],
+  "allOf": [{ "$ref": "../../common/schemas/base_envelope.json" }],
   "properties": {
     "payload": {
       "type": "object",
@@ -244,22 +272,27 @@ Not applicable. This is a library/contract repository, not an API service. Contr
 ### Development Phases
 
 **Phase 1: Foundation (Stories 1-2)**
+
 - Goal: Repository infrastructure + common base schemas
 - Outcome: Ready for component-specific schema definition
 
 **Phase 2: TheBoard Contracts (Story 3)**
+
 - Goal: Define all TheBoard event schemas
 - Outcome: Complete JSON Schema definitions for TheBoard component
 
 **Phase 3: Code Generation (Stories 4-5)**
+
 - Goal: Automated Python + TypeScript artifact generation
 - Outcome: Validated Pydantic models and Zod schemas from all TheBoard schemas
 
 **Phase 4: Validation & CI (Stories 6-7)**
+
 - Goal: Contract tests + automated CI validation
 - Outcome: 100% test coverage, PR validation prevents bad schemas from merging
 
 **Phase 5: Documentation (Story 8)**
+
 - Goal: Human-readable event catalog
 - Outcome: Developers can browse event docs and understand how to use contracts
 
@@ -345,6 +378,7 @@ How we'll know it's done:
 **Target Completion:** M effort (schema infrastructure + initial contracts + CI validation)
 
 **Milestones:**
+
 1. Repository infrastructure complete (S effort)
 2. Common base schemas + Python generation working (M effort)
 3. TheBoard events defined + TypeScript generation working (M effort)
@@ -359,6 +393,7 @@ How we'll know it's done:
 ## Approval
 
 **Reviewed By:**
+
 - [ ] Jarad DeLorenzo (Author)
 - [ ] Technical Lead (N/A - solo project)
 - [ ] Product Owner (N/A - internal tool)
@@ -370,6 +405,7 @@ How we'll know it's done:
 ### Phase 4: Implementation
 
 For Level 1 projects (1-10 stories):
+
 - Run `/sprint-planning` to plan your sprint
 - Then create and implement stories
 
@@ -377,4 +413,4 @@ For Level 1 projects (1-10 stories):
 
 **This document was created using BMAD Method v6 - Phase 2 (Planning)**
 
-*To continue: Run `/workflow-status` to see your progress and next recommended workflow.*
+_To continue: Run `/workflow-status` to see your progress and next recommended workflow._

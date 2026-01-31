@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/common/base_voice_event.json",
+  "title": "Base Voice Event",
+  "description": "Base schema for all voice-related events across the Hey-Ma ecosystem. Provides common fields for transcription, audio metadata, and session tracking. All voice component events extend this base.",
+  "type": "object",
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "description": "Event discriminator for routing (e.g., 'whisperlivekit.transcription.completed'). Used by Bloodbank for topic-based routing.",
+      "pattern": "^[a-z0-9]+\\.[a-z0-9._]+$",
+      "examples": [
+        "whisperlivekit.transcription.completed",
+        "whisperlivekit.transcription.partial",
+        "tonny.response.completed"
+      ]
+    },
+    "timestamp": {
+      "$ref": "#/$defs/timestamp",
+      "description": "ISO 8601 UTC timestamp when event was emitted"
+    },
+    "session_id": {
+      "$ref": "#/$defs/uuid",
+      "description": "UUID of the voice session this event relates to. Used for event correlation and tracing across the voice-to-response pipeline."
+    },
+    "source": {
+      "type": "string",
+      "description": "Component that emitted this event (e.g., 'whisperlivekit', 'tonny', 'candybar')",
+      "pattern": "^[a-z0-9_-]+$",
+      "examples": ["whisperlivekit", "tonny", "candybar", "elevenlabs"]
+    },
+    "target": {
+      "type": "string",
+      "description": "Intended consumer of this event (e.g., 'tonny', 'candybar'). Used for targeted routing.",
+      "pattern": "^[a-z0-9_-]+$",
+      "examples": ["tonny", "candybar", "candystore", "all"]
+    }
+  },
+  "required": ["event_type", "timestamp", "session_id", "source", "target"],
+  "$defs": {
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp in UTC (e.g., '2024-01-27T10:30:00Z')"
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "RFC 4122 UUID"
+    }
+  }
+}

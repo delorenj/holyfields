@@ -1,0 +1,78 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/theboard/events/round_completed.json",
+  "title": "Round Completed Event",
+  "description": "Emitted when a meeting round completes. Payload contains round metrics and convergence indicators.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../common/schemas/base_event.json"
+    }
+  ],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "meeting.round_completed",
+      "description": "Event type discriminator"
+    },
+    "round_num": {
+      "$ref": "../../common/schemas/types.json#/$defs/round_number",
+      "description": "Round number that just completed"
+    },
+    "agent_name": {
+      "$ref": "../../common/schemas/types.json#/$defs/agent_name",
+      "description": "Name of agent who contributed in this round"
+    },
+    "response_length": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Character length of agent's response"
+    },
+    "comment_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of comments extracted from response"
+    },
+    "avg_novelty": {
+      "$ref": "../../common/schemas/types.json#/$defs/novelty_score",
+      "description": "Average novelty score of extracted comments"
+    },
+    "tokens_used": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total tokens consumed (input + output)"
+    },
+    "cost": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Cost in USD for this round's LLM calls"
+    }
+  },
+  "required": [
+    "event_type",
+    "timestamp",
+    "meeting_id",
+    "round_num",
+    "agent_name",
+    "response_length",
+    "comment_count",
+    "avg_novelty",
+    "tokens_used",
+    "cost"
+  ],
+  "additionalProperties": false,
+  "examples": [
+    {
+      "event_type": "meeting.round_completed",
+      "timestamp": "2024-01-15T10:31:23Z",
+      "meeting_id": "550e8400-e29b-41d4-a716-446655440000",
+      "round_num": 1,
+      "agent_name": "Alice",
+      "response_length": 452,
+      "comment_count": 3,
+      "avg_novelty": 0.85,
+      "tokens_used": 1234,
+      "cost": 0.0234
+    }
+  ]
+}
