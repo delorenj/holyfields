@@ -18,6 +18,9 @@ echo "🧹 Cleaning output directory..."
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR/theboard/events"
+mkdir -p "$OUTPUT_DIR/schemas/conversation"
+mkdir -p "$OUTPUT_DIR/schemas/task"
+mkdir -p "$OUTPUT_DIR/schemas/agent"
 
 echo "📦 Generating base event schema..."
 bunx json-schema-to-zod \
@@ -25,6 +28,41 @@ bunx json-schema-to-zod \
   --output "$OUTPUT_DIR/base_event.ts" \
   --name "baseEventSchema" \
   --type "BaseEvent" \
+  --module esm \
+  --withJsdocs
+
+echo "📦 Generating Conversation schemas..."
+bunx json-schema-to-zod \
+  --input "$SCHEMA_DIR/schemas/conversation/message_posted.json" \
+  --output "$OUTPUT_DIR/schemas/conversation/message_posted.ts" \
+  --name "messagePostedEventSchema" \
+  --type "MessagePostedEvent" \
+  --module esm \
+  --withJsdocs
+
+echo "📦 Generating Task schemas..."
+bunx json-schema-to-zod \
+  --input "$SCHEMA_DIR/schemas/task/step_proposed.json" \
+  --output "$OUTPUT_DIR/schemas/task/step_proposed.ts" \
+  --name "taskStepProposedEventSchema" \
+  --type "TaskStepProposedEvent" \
+  --module esm \
+  --withJsdocs
+
+bunx json-schema-to-zod \
+  --input "$SCHEMA_DIR/schemas/task/step_executed.json" \
+  --output "$OUTPUT_DIR/schemas/task/step_executed.ts" \
+  --name "taskStepExecutedEventSchema" \
+  --type "TaskStepExecutedEvent" \
+  --module esm \
+  --withJsdocs
+
+echo "📦 Generating Agent schemas..."
+bunx json-schema-to-zod \
+  --input "$SCHEMA_DIR/schemas/agent/state_changed.json" \
+  --output "$OUTPUT_DIR/schemas/agent/state_changed.ts" \
+  --name "agentStateChangedEventSchema" \
+  --type "AgentStateChangedEvent" \
   --module esm \
   --withJsdocs
 
@@ -135,6 +173,10 @@ cat > "$OUTPUT_DIR/index.ts" <<'EOF'
 
 export * from './base_event.js';
 export * from './theboard/events/index.js';
+export * from './schemas/conversation/message_posted.js';
+export * from './schemas/task/step_proposed.js';
+export * from './schemas/task/step_executed.js';
+export * from './schemas/agent/state_changed.js';
 EOF
 
 # Create theboard/events/index.ts

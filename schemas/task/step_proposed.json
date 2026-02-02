@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/task/step.proposed.v1.schema.json",
+  "title": "Task Step Proposed Event",
+  "description": "Emitted when a working step is proposed",
+  "type": "object",
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "task.step.proposed"
+    },
+    "timestamp": {
+      "$ref": "../../common/schemas/types.json#/$defs/timestamp"
+    },
+    "task_id": {
+      "$ref": "../../common/schemas/types.json#/$defs/uuid"
+    },
+    "ticket_id": {
+      "type": "string",
+      "description": "Ticket or Issue ID (e.g. TICKET-101)"
+    },
+    "changeset": {
+      "type": "object",
+      "properties": {
+        "file": {
+          "type": "string"
+        },
+        "diff": {
+          "type": "string"
+        }
+      },
+      "required": ["file", "diff"]
+    },
+    "validation_plan": {
+      "type": "string",
+      "description": "Command or plan to validate this change (e.g. npm test)"
+    }
+  },
+  "required": ["event_type", "timestamp", "task_id", "ticket_id", "changeset"]
+}

@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/conversation/message.posted.v1.schema.json",
+  "title": "Message Posted Event",
+  "description": "Emitted when a message is posted in a brainstorming conversation",
+  "type": "object",
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "conversation.message.posted"
+    },
+        "timestamp": {
+          "$ref": "../../common/schemas/types.json#/$defs/timestamp"
+        },
+        "conversation_id": {
+          "$ref": "../../common/schemas/types.json#/$defs/uuid"
+        },
+        "message_id": {
+          "$ref": "../../common/schemas/types.json#/$defs/uuid"
+        },
+        "author_id": {      "type": "string",
+      "description": "ID of the author (user or agent)"
+    },
+    "content": {
+      "type": "string",
+      "description": "The message content"
+    },
+    "reply_to_id": {
+      "$ref": "../../common/schemas/types.json#/$defs/uuid",
+      "description": "ID of the message this is replying to"
+    }
+  },
+  "required": ["event_type", "timestamp", "conversation_id", "message_id", "author_id", "content"]
+}

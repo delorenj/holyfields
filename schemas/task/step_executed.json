@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/task/step.executed.v1.schema.json",
+  "title": "Task Step Executed Event",
+  "description": "Emitted when a working step is executed and validated",
+  "type": "object",
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "task.step.executed"
+    },
+        "timestamp": {
+          "$ref": "../../common/schemas/types.json#/$defs/timestamp"
+        },
+        "task_id": {
+          "$ref": "../../common/schemas/types.json#/$defs/uuid"
+        },
+        "step_id": {
+          "$ref": "../../common/schemas/types.json#/$defs/uuid"
+        },    "file_path": {
+      "type": "string"
+    },
+    "diff": {
+      "type": "string"
+    },
+    "test_result": {
+      "type": "string",
+      "enum": ["passed", "failed", "skipped"]
+    },
+    "approval_status": {
+      "type": "string",
+      "enum": ["approved", "rejected", "pending"]
+    }
+  },
+  "required": ["event_type", "timestamp", "task_id", "test_result", "approval_status"]
+}

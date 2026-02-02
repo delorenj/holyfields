@@ -11,6 +11,10 @@ from .round_completed import RoundCompletedEvent
 from .meeting_converged import MeetingConvergedEvent
 from .meeting_completed import MeetingCompletedEvent, TopComment
 from .meeting_failed import MeetingFailedEvent
+from .message_posted import MessagePostedEvent
+from .step_proposed import TaskStepProposedEvent
+from .step_executed import TaskStepExecutedEvent
+from .state_changed import AgentStateChangedEvent
 
 __all__ = [
     "BaseEvent",
@@ -22,4 +26,8 @@ __all__ = [
     "MeetingCompletedEvent",
     "TopComment",
     "MeetingFailedEvent",
+    "MessagePostedEvent",
+    "TaskStepProposedEvent",
+    "TaskStepExecutedEvent",
+    "AgentStateChangedEvent",
 ]

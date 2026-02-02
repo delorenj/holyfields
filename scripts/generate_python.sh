@@ -28,6 +28,9 @@ echo "📦 Generating all schemas with resolved references..."
 datamodel-codegen \
   --input "$SCHEMA_DIR/common/schemas" \
   --input "$SCHEMA_DIR/theboard/events" \
+  --input "$SCHEMA_DIR/schemas/conversation" \
+  --input "$SCHEMA_DIR/schemas/task" \
+  --input "$SCHEMA_DIR/schemas/agent" \
   --input-file-type jsonschema \
   --output "$OUTPUT_DIR" \
   --output-model-type pydantic_v2.BaseModel \
@@ -59,6 +62,10 @@ from .round_completed import RoundCompletedEvent
 from .meeting_converged import MeetingConvergedEvent
 from .meeting_completed import MeetingCompletedEvent, TopComment
 from .meeting_failed import MeetingFailedEvent
+from .message_posted import MessagePostedEvent
+from .step_proposed import TaskStepProposedEvent
+from .step_executed import TaskStepExecutedEvent
+from .state_changed import AgentStateChangedEvent
 
 __all__ = [
     "BaseEvent",
@@ -70,6 +77,10 @@ __all__ = [
     "MeetingCompletedEvent",
     "TopComment",
     "MeetingFailedEvent",
+    "MessagePostedEvent",
+    "TaskStepProposedEvent",
+    "TaskStepExecutedEvent",
+    "AgentStateChangedEvent",
 ]
 EOF
 
