@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/task/step.executed.v1.json",
+  "title": "Task Step Executed Event",
+  "description": "Emitted when a working step is executed and validated",
+  "type": "object",
+  "allOf": [
+    { "$ref": "../_common/base_event.v1.json" }
+  ],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "task.step.executed",
+      "description": "Event type discriminator"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "task_id": {
+          "$ref": "../_common/types.v1.json#/$defs/uuid",
+          "description": "UUID of the task"
+        },
+        "step_id": {
+          "$ref": "../_common/types.v1.json#/$defs/uuid",
+          "description": "UUID of this step"
+        },
+        "file_path": {
+          "type": "string",
+          "description": "Path to the file that was modified"
+        },
+        "diff": {
+          "type": "string",
+          "description": "Git diff of the changes"
+        },
+        "test_result": {
+          "type": "string",
+          "enum": ["passed", "failed", "skipped"],
+          "description": "Result of test execution"
+        },
+        "approval_status": {
+          "type": "string",
+          "enum": ["approved", "rejected", "pending"],
+          "description": "Human review status"
+        }
+      },
+      "required": ["task_id", "test_result", "approval_status"]
+    }
+  },
+  "required": ["event_type", "payload"]
+}

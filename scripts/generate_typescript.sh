@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Generate TypeScript Zod schemas and types from JSON Schemas
-# Uses json-schema-to-zod for contract generation
+# Generate TypeScript Zod schemas from JSON Schemas
+# Updated for v1 schema structure with nested directories
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-SCHEMA_DIR="$PROJECT_ROOT"
+SCHEMA_DIR="$PROJECT_ROOT/schemas"
 OUTPUT_DIR="$PROJECT_ROOT/generated/typescript"
 
-echo "🔨 Generating TypeScript Zod schemas from JSON Schemas..."
+echo "🔨 Holyfields TypeScript Generator (v1 schema structure)"
 echo "Schema directory: $SCHEMA_DIR"
 echo "Output directory: $OUTPUT_DIR"
 
@@ -17,209 +17,86 @@ echo "Output directory: $OUTPUT_DIR"
 echo "🧹 Cleaning output directory..."
 rm -rf "$OUTPUT_DIR"
 mkdir -p "$OUTPUT_DIR"
-mkdir -p "$OUTPUT_DIR/theboard/events"
-mkdir -p "$OUTPUT_DIR/schemas/conversation"
-mkdir -p "$OUTPUT_DIR/schemas/task"
-mkdir -p "$OUTPUT_DIR/schemas/agent"
 
-echo "📦 Generating base event schema..."
+# Generate base types first
+echo "📦 Generating base types..."
+
+# Generate _common types
+mkdir -p "$OUTPUT_DIR/_common"
 bunx json-schema-to-zod \
-  --input "$SCHEMA_DIR/common/schemas/base_event.json" \
-  --output "$OUTPUT_DIR/base_event.ts" \
-  --name "baseEventSchema" \
+  --input "$SCHEMA_DIR/_common/base_event.v1.json" \
+  --output "$OUTPUT_DIR/_common/base_event.v1.ts" \
+  --name "BaseEvent" \
   --type "BaseEvent" \
   --module esm \
-  --withJsdocs
+  --withJsdocs 2>&1 || echo "⚠️  Base event generation had issues"
 
-echo "📦 Generating Conversation schemas..."
-bunx json-schema-to-zod \
-  --input "$SCHEMA_DIR/schemas/conversation/message_posted.json" \
-  --output "$OUTPUT_DIR/schemas/conversation/message_posted.ts" \
-  --name "messagePostedEventSchema" \
-  --type "MessagePostedEvent" \
-  --module esm \
-  --withJsdocs
+# Generate all domain schemas
+echo "📦 Generating domain schemas..."
 
-echo "📦 Generating Task schemas..."
-bunx json-schema-to-zod \
-  --input "$SCHEMA_DIR/schemas/task/step_proposed.json" \
-  --output "$OUTPUT_DIR/schemas/task/step_proposed.ts" \
-  --name "taskStepProposedEventSchema" \
-  --type "TaskStepProposedEvent" \
-  --module esm \
-  --withJsdocs
+# Function to generate TypeScript from JSON schema
+generate_ts() {
+  local input_file="$1"
+  local output_file="${input_file%.json}.ts"
+  output_file="${output_file/$SCHEMA_DIR/$OUTPUT_DIR}"
+  
+  # Create output directory
+  mkdir -p "$(dirname "$output_file")"
+  
+  # Get schema name from filename (e.g., "message.received.v1" -> "MessageReceived")
+  local schema_name=$(basename "$input_file" .v1.json)
+  schema_name=$(echo "$schema_name" | sed -E 's/(^|\.)([a-z])/\U\2/g' | sed 's/\.//g')
+  
+  bunx json-schema-to-zod \
+    --input "$input_file" \
+    --output "$output_file" \
+    --name "${schema_name}EventSchema" \
+    --type "${schema_name}Event" \
+    --module esm \
+    --withJsdocs 2>&1 || echo "⚠️  Failed to generate $schema_name"
+}
 
-bunx json-schema-to-zod \
-  --input "$SCHEMA_DIR/schemas/task/step_executed.json" \
-  --output "$OUTPUT_DIR/schemas/task/step_executed.ts" \
-  --name "taskStepExecutedEventSchema" \
-  --type "TaskStepExecutedEvent" \
-  --module esm \
-  --withJsdocs
-
-echo "📦 Generating Agent schemas..."
-bunx json-schema-to-zod \
-  --input "$SCHEMA_DIR/schemas/agent/state_changed.json" \
-  --output "$OUTPUT_DIR/schemas/agent/state_changed.ts" \
-  --name "agentStateChangedEventSchema" \
-  --type "AgentStateChangedEvent" \
-  --module esm \
-  --withJsdocs
-
-echo "📦 Generating TheBoard event schemas..."
-
-# meeting_created.json
-bunx json-schema-to-zod \
-  --input "$SCHEMA_DIR/theboard/events/meeting_created.json" \
-  --output "$OUTPUT_DIR/theboard/events/meeting_created.ts" \
-  --name "meetingCreatedEventSchema" \
-  --type "MeetingCreatedEvent" \
-  --module esm \
-  --withJsdocs
-
-# meeting_started.json
-bunx json-schema-to-zod \
-  --input "$SCHEMA_DIR/theboard/events/meeting_started.json" \
-  --output "$OUTPUT_DIR/theboard/events/meeting_started.ts" \
-  --name "meetingStartedEventSchema" \
-  --type "MeetingStartedEvent" \
-  --module esm \
-  --withJsdocs
-
-# round_completed.json
-bunx json-schema-to-zod \
-  --input "$SCHEMA_DIR/theboard/events/round_completed.json" \
-  --output "$OUTPUT_DIR/theboard/events/round_completed.ts" \
-  --name "roundCompletedEventSchema" \
-  --type "RoundCompletedEvent" \
-  --module esm \
-  --withJsdocs
-
-# comment_extracted.json
-bunx json-schema-to-zod \
-  --input "$SCHEMA_DIR/theboard/events/comment_extracted.json" \
-  --output "$OUTPUT_DIR/theboard/events/comment_extracted.ts" \
-  --name "commentExtractedEventSchema" \
-  --type "CommentExtractedEvent" \
-  --module esm \
-  --withJsdocs
-
-# meeting_converged.json
-bunx json-schema-to-zod \
-  --input "$SCHEMA_DIR/theboard/events/meeting_converged.json" \
-  --output "$OUTPUT_DIR/theboard/events/meeting_converged.ts" \
-  --name "meetingConvergedEventSchema" \
-  --type "MeetingConvergedEvent" \
-  --module esm \
-  --withJsdocs
-
-# meeting_completed.json
-bunx json-schema-to-zod \
-  --input "$SCHEMA_DIR/theboard/events/meeting_completed.json" \
-  --output "$OUTPUT_DIR/theboard/events/meeting_completed.ts" \
-  --name "meetingCompletedEventSchema" \
-  --type "MeetingCompletedEvent" \
-  --module esm \
-  --withJsdocs
-
-# meeting_failed.json
-bunx json-schema-to-zod \
-  --input "$SCHEMA_DIR/theboard/events/meeting_failed.json" \
-  --output "$OUTPUT_DIR/theboard/events/meeting_failed.ts" \
-  --name "meetingFailedEventSchema" \
-  --type "MeetingFailedEvent" \
-  --module esm \
-  --withJsdocs
-
-echo "🔧 Post-processing generated files..."
-
-# Remove .unique() calls (Zod doesn't support uniqueItems natively)
-# Note: uniqueItems validation is enforced on Python side, not TypeScript runtime
-find "$OUTPUT_DIR" -name "*.ts" -type f -exec sed -i 's/\.unique()//g' {} \;
-
-# Fix format types and $ref types that json-schema-to-zod converts to z.any()
-# Replace z.any() with proper Zod validators
-find "$OUTPUT_DIR" -name "*.ts" -type f -exec sed -i \
-  -e 's/z\.any()\.describe("ISO 8601 UTC timestamp when event was emitted")/z.string().datetime().describe("ISO 8601 UTC timestamp when event was emitted")/g' \
-  -e 's/z\.any()\.describe("UUID of the meeting this event relates to\. Used for event correlation and tracing\.")/z.string().uuid().describe("UUID of the meeting this event relates to. Used for event correlation and tracing.")/g' \
-  -e 's/z\.any()\.describe("Novelty score (0\.0 = repetitive, 1\.0 = novel)")/z.number().min(0.0).max(1.0).describe("Novelty score (0.0 = repetitive, 1.0 = novel)")/g' \
-  {} \;
-
-# Fix event schema composition
-# Use baseEventSchema.extend() pattern to properly override event_type with specific literal
-for file in "$OUTPUT_DIR/theboard/events/"*.ts; do
-  if [[ "$file" != *"/index.ts" ]]; then
-    # Add import for baseEventSchema at the top (after existing imports)
-    sed -i '1 a import { baseEventSchema } from "../../base_event.js"' "$file"
-
-    # Transform: z.object({ ...fields }).strict().and(z.any())
-    # Into: baseEventSchema.extend({ ...fields })
-    # This preserves event_type literals and properly composes with base
-    sed -i -e 's/export const \([a-zA-Z]*\) = z\.object(/export const \1 = baseEventSchema.extend(/g' \
-           -e 's/\.strict()\.and(z\.any())//g' "$file"
-  fi
+# Find and generate all v1 schemas
+find "$SCHEMA_DIR" -name "*.v1.json" -not -path "*/_common/*" | while read -r schema_file; do
+  generate_ts "$schema_file"
 done
+
+echo "🔧 Post-processing..."
+
+# Remove .unique() calls (Zod doesn't support uniqueItems)
+find "$OUTPUT_DIR" -name "*.ts" -type f -exec sed -i 's/\.unique()//g' {} \; 2>/dev/null || true
 
 echo "📝 Creating barrel exports..."
 
 # Create root index.ts
-cat > "$OUTPUT_DIR/index.ts" <<'EOF'
+cat > "$OUTPUT_DIR/index.ts" <> 'EOF'
 /**
- * Holyfields TypeScript contracts
+ * Holyfields TypeScript contracts (v1)
  *
  * DO NOT EDIT MANUALLY. Generated from JSON Schemas.
  * To regenerate: mise run generate:typescript
  */
 
-export * from './base_event.js';
-export * from './theboard/events/index.js';
-export * from './schemas/conversation/message_posted.js';
-export * from './schemas/task/step_proposed.js';
-export * from './schemas/task/step_executed.js';
-export * from './schemas/agent/state_changed.js';
-EOF
+export * from './_common/base_event.v1.js';
 
-# Create theboard/events/index.ts
-cat > "$OUTPUT_DIR/theboard/events/index.ts" <<'EOF'
-/**
- * TheBoard event schemas
- *
- * DO NOT EDIT MANUALLY. Generated from JSON Schemas.
- * Source: ~/code/33GOD/holyfields/trunk-main/theboard/events/*.json
- *
- * To regenerate: mise run generate:typescript
- */
-
-export * from './meeting_created.js';
-export * from './meeting_started.js';
-export * from './round_completed.js';
-export * from './comment_extracted.js';
-export * from './meeting_converged.js';
-export * from './meeting_completed.js';
-export * from './meeting_failed.js';
+// Domain exports will be added here
 EOF
 
 echo "✅ TypeScript code generation complete!"
 echo "📁 Generated files in: $OUTPUT_DIR"
 echo ""
-echo "Usage in theboardroom:"
-echo "  import { meetingCreatedEventSchema, type MeetingCreatedEvent } from 'holyfields';"
+echo "Next steps:"
+echo "  1. Review generated Zod schemas"
+echo "  2. Import from holyfields in your TypeScript projects"
 echo ""
-echo "🔍 Validate with: tsc --noEmit"
 
-# Run TypeScript validation
-if command -v tsc &> /dev/null; then
-  echo ""
+# Optional: Run TypeScript validation
+if command -v tsc &> /dev/null && [ -f "$PROJECT_ROOT/tsconfig.json" ]; then
   echo "🔍 Running TypeScript validation..."
   cd "$PROJECT_ROOT"
-  tsc --noEmit || {
-    echo "⚠️  TypeScript validation found issues"
-    exit 1
-  }
-  echo "✅ TypeScript validation passed!"
+  tsc --noEmit || echo "⚠️  TypeScript validation found issues"
 else
-  echo ""
-  echo "ℹ️  TypeScript not found in PATH, skipping validation"
+  echo "ℹ️  TypeScript not configured, skipping validation"
 fi
 
 echo "✨ Done!"

@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/session/thread/agent/action.v1.json",
+  "title": "Session Agent Tool Action Event",
+  "description": "Claude Code tool was invoked",
+  "type": "object",
+  "allOf": [
+    { "$ref": "../_common/base_event.v1.json" }
+  ],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "session.thread.agent.action",
+      "description": "Event type discriminator"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "type": "string",
+          "description": "Claude Code session ID"
+        },
+        "thread_id": {
+          "type": ["string", "null"],
+          "description": "Thread ID"
+        },
+        "tool_name": {
+          "type": "string",
+          "description": "Name of the tool invoked"
+        },
+        "tool_input": {
+          "type": "object",
+          "description": "Tool input parameters"
+        },
+        "working_directory": {
+          "type": ["string", "null"],
+          "description": "Working directory"
+        },
+        "git_branch": {
+          "type": ["string", "null"],
+          "description": "Current git branch"
+        },
+        "files_in_context": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Files in context"
+        },
+        "turn_number": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Turn number"
+        },
+        "model": {
+          "$ref": "../_common/types.v1.json#/$defs/model_name",
+          "description": "Model being used"
+        }
+      },
+      "required": ["session_id", "tool_name"]
+    }
+  },
+  "required": ["event_type", "payload"]
+}
