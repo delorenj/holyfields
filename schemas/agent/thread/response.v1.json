@@ -5,7 +5,9 @@
   "description": "Agent responded to prompt",
   "type": "object",
   "allOf": [
-    { "$ref": "../../_common/base_event.v1.json" }
+    {
+      "$ref": "../../_common/base_event.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
@@ -16,35 +18,46 @@
     "payload": {
       "type": "object",
       "properties": {
-        "agent_name": {
-          "$ref": "../../_common/types.v1.json#/$defs/agent_name",
-          "description": "Name of the agent responding"
-        },
         "provider": {
-          "type": "string",
-          "description": "LLM provider"
+          "type": "string"
+        },
+        "prompt_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Deprecated - use correlation_ids"
         },
         "response": {
-          "type": "string",
-          "description": "The response text"
+          "type": "string"
         },
         "model": {
-          "$ref": "../../_common/types.v1.json#/$defs/model_name",
-          "description": "Model used for the response"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "tokens_used": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Total tokens consumed"
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "duration_ms": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Time to generate response in milliseconds"
+          "type": [
+            "integer",
+            "null"
+          ]
         }
       },
-      "required": ["agent_name", "provider", "response"]
+      "required": [
+        "provider",
+        "response"
+      ]
     }
   },
-  "required": ["event_type", "payload"]
+  "required": [
+    "event_type",
+    "payload"
+  ]
 }

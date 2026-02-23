@@ -8,17 +8,19 @@ from pydantic import BaseModel, Field
 class SessionThreadEndV1(BaseModel):
     """Claude Code session ended"""
 
-    session_id: str = Field(..., description="Claude Code session ID")
-    end_reason: str = Field(..., description="Reason the session ended")
-    total_turns: int = Field(..., description="Total conversation turns")
-    final_status: str = Field(..., description="Final session status")
-    thread_id: Optional[str | None] = Field(None, description="Thread ID if available")
-    duration_seconds: Optional[int] = Field(None, description="Session duration in seconds")
-    total_tokens: Optional[int] = Field(None, description="Total tokens consumed")
-    total_cost_usd: Optional[float] = Field(None, description="Total cost in USD")
-    tools_used: Optional[dict[str, Any]] = Field(None, description="Map of tool name to invocation count")
-    files_modified: Optional[list[str]] = Field(None, description="Files that were modified")
-    git_commits: Optional[list[str]] = Field(None, description="Commit SHAs created")
-    summary: Optional[str | None] = Field(None, description="Session summary if generated")
+    session_id: str
+    end_reason: str
+    final_status: str
+    thread_id: Optional[str | None] = None
+    duration_seconds: Optional[int | None] = None
+    total_turns: Optional[int] = None
+    total_tokens: Optional[int | None] = None
+    total_cost_usd: Optional[float | None] = None
+    tools_used: Optional[int] = None
+    files_modified: Optional[list[str]] = None
+    git_commits: Optional[list[str]] = None
+    summary: Optional[str | None] = None
+    working_directory: Optional[str | None] = None
+    git_branch: Optional[str | None] = None
 
     EVENT_TYPE: str = "session.thread.end"

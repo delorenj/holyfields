@@ -5,7 +5,9 @@
   "description": "Claude Code session ended",
   "type": "object",
   "allOf": [
-    { "$ref": "../_common/base_event.v1.json" }
+    {
+      "$ref": "../_common/base_event.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
@@ -17,64 +19,84 @@
       "type": "object",
       "properties": {
         "session_id": {
-          "type": "string",
-          "description": "Claude Code session ID"
+          "type": "string"
         },
         "thread_id": {
-          "type": ["string", "null"],
-          "description": "Thread ID if available"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "end_reason": {
-          "type": "string",
-          "enum": ["user_stop", "timeout", "error", "completion", "waiting_for_input"],
-          "description": "Reason the session ended"
+          "type": "string"
         },
         "duration_seconds": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Session duration in seconds"
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "total_turns": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Total conversation turns"
+          "type": "integer"
         },
         "total_tokens": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Total tokens consumed"
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "total_cost_usd": {
-          "type": "number",
-          "minimum": 0,
-          "description": "Total cost in USD"
+          "type": [
+            "number",
+            "null"
+          ]
         },
         "tools_used": {
-          "type": "object",
-          "description": "Map of tool name to invocation count"
+          "type": "integer"
         },
         "files_modified": {
           "type": "array",
-          "items": { "type": "string" },
-          "description": "Files that were modified"
+          "items": {
+            "type": "string"
+          }
         },
         "git_commits": {
           "type": "array",
-          "items": { "type": "string" },
-          "description": "Commit SHAs created"
+          "items": {
+            "type": "string"
+          }
         },
         "final_status": {
-          "type": "string",
-          "enum": ["success", "error", "partial", "abandoned"],
-          "description": "Final session status"
+          "type": "string"
         },
         "summary": {
-          "type": ["string", "null"],
-          "description": "Session summary if generated"
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "working_directory": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "git_branch": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
-      "required": ["session_id", "end_reason", "total_turns", "final_status"]
+      "required": [
+        "session_id",
+        "end_reason",
+        "final_status"
+      ]
     }
   },
-  "required": ["event_type", "payload"]
+  "required": [
+    "event_type",
+    "payload"
+  ]
 }

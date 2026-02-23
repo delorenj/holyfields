@@ -5,7 +5,9 @@
   "description": "Claude Code tool was invoked",
   "type": "object",
   "allOf": [
-    { "$ref": "../_common/base_event.v1.json" }
+    {
+      "$ref": "../_common/base_event.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
@@ -17,12 +19,13 @@
       "type": "object",
       "properties": {
         "session_id": {
-          "type": "string",
-          "description": "Claude Code session ID"
+          "type": "string"
         },
         "thread_id": {
-          "type": ["string", "null"],
-          "description": "Thread ID"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "tool_name": {
           "type": "string",
@@ -33,30 +36,66 @@
           "description": "Tool input parameters"
         },
         "working_directory": {
-          "type": ["string", "null"],
-          "description": "Working directory"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "git_branch": {
-          "type": ["string", "null"],
-          "description": "Current git branch"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "files_in_context": {
           "type": "array",
-          "items": { "type": "string" },
-          "description": "Files in context"
+          "items": {
+            "type": "string"
+          }
         },
         "turn_number": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Turn number"
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "model": {
-          "$ref": "../_common/types.v1.json#/$defs/model_name",
-          "description": "Model being used"
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "conversation_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tool_metadata": {
+          "type": "object",
+          "description": "Tool invocation metadata"
+        },
+        "git_status": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
-      "required": ["session_id", "tool_name"]
+      "required": [
+        "session_id",
+        "tool_metadata"
+      ]
     }
   },
-  "required": ["event_type", "payload"]
+  "required": [
+    "event_type",
+    "payload"
+  ]
 }

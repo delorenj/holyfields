@@ -5,7 +5,9 @@
   "description": "Agent interaction failed",
   "type": "object",
   "allOf": [
-    { "$ref": "../../_common/base_event.v1.json" }
+    {
+      "$ref": "../../_common/base_event.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
@@ -16,38 +18,39 @@
     "payload": {
       "type": "object",
       "properties": {
-        "agent_name": {
-          "$ref": "../../_common/types.v1.json#/$defs/agent_name",
-          "description": "Name of the agent that failed"
-        },
         "provider": {
-          "type": "string",
-          "description": "LLM provider"
+          "type": "string"
         },
         "model": {
-          "$ref": "../../_common/types.v1.json#/$defs/model_name",
-          "description": "Model that failed"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "error_message": {
-          "type": "string",
-          "description": "Error message"
+          "type": "string"
         },
         "error_code": {
-          "type": ["string", "null"],
-          "description": "Error code if available"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "is_retryable": {
-          "type": "boolean",
-          "description": "Whether the error is retryable"
+          "type": "boolean"
         },
         "retry_count": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Number of retry attempts"
+          "type": "integer"
         }
       },
-      "required": ["agent_name", "provider", "error_message"]
+      "required": [
+        "provider",
+        "error_message"
+      ]
     }
   },
-  "required": ["event_type", "payload"]
+  "required": [
+    "event_type",
+    "payload"
+  ]
 }

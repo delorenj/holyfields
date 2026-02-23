@@ -5,7 +5,9 @@
   "description": "A prompt is sent to an agent thread",
   "type": "object",
   "allOf": [
-    { "$ref": "../../_common/base_event.v1.json" }
+    {
+      "$ref": "../../_common/base_event.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
@@ -16,38 +18,51 @@
     "payload": {
       "type": "object",
       "properties": {
-        "agent_name": {
-          "$ref": "../../_common/types.v1.json#/$defs/agent_name",
-          "description": "Name of the agent receiving the prompt"
-        },
         "provider": {
-          "type": "string",
-          "description": "LLM provider (e.g., 'anthropic', 'openai', 'google')"
+          "type": "string"
         },
         "model": {
-          "$ref": "../../_common/types.v1.json#/$defs/model_name",
-          "description": "Specific model used"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "prompt": {
-          "type": "string",
-          "description": "The prompt text"
+          "type": "string"
         },
         "project": {
-          "type": ["string", "null"],
-          "description": "Git project name if applicable"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "working_dir": {
-          "type": ["string", "null"],
-          "description": "Working directory for the session"
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "domain": {
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "tags": {
           "type": "array",
-          "items": { "type": "string" },
-          "description": "Tags for categorizing this prompt"
+          "items": {
+            "type": "string"
+          }
         }
       },
-      "required": ["agent_name", "provider", "prompt"]
+      "required": [
+        "provider",
+        "prompt"
+      ]
     }
   },
-  "required": ["event_type", "payload"]
+  "required": [
+    "event_type",
+    "payload"
+  ]
 }

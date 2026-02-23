@@ -5,7 +5,9 @@
   "description": "Claude Code thinking/reasoning event",
   "type": "object",
   "allOf": [
-    { "$ref": "../../_common/base_event.v1.json" }
+    {
+      "$ref": "../../_common/base_event.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
@@ -17,34 +19,44 @@
       "type": "object",
       "properties": {
         "session_id": {
-          "type": "string",
-          "description": "Claude Code session ID"
+          "type": "string"
         },
         "thread_id": {
-          "type": ["string", "null"],
-          "description": "Thread ID"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "thinking_text": {
-          "type": "string",
-          "description": "Thinking/reasoning content"
+          "type": "string"
         },
         "thinking_duration_ms": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Thinking duration in milliseconds"
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "turn_number": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Turn number"
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "triggered_by_tool": {
-          "type": ["string", "null"],
-          "description": "Tool that preceded thinking"
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
-      "required": ["session_id", "thinking_text"]
+      "required": [
+        "session_id",
+        "thinking_text"
+      ]
     }
   },
-  "required": ["event_type", "payload"]
+  "required": [
+    "event_type",
+    "payload"
+  ]
 }

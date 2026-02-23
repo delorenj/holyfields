@@ -8,11 +8,11 @@ from pydantic import BaseModel, Field
 class AgentThreadResponseV1(BaseModel):
     """Agent responded to prompt"""
 
-    agent_name: str = Field(..., description="Name of the agent responding")
-    provider: str = Field(..., description="LLM provider")
-    response: str = Field(..., description="The response text")
-    model: Optional[str] = Field(None, description="Model used for the response")
-    tokens_used: Optional[int] = Field(None, description="Total tokens consumed")
-    duration_ms: Optional[int] = Field(None, description="Time to generate response in milliseconds")
+    provider: str
+    response: str
+    prompt_id: Optional[str | None] = Field(None, description="Deprecated - use correlation_ids")
+    model: Optional[str | None] = None
+    tokens_used: Optional[int | None] = None
+    duration_ms: Optional[int | None] = None
 
     EVENT_TYPE: str = "agent.thread.response"

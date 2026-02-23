@@ -5,7 +5,9 @@
   "description": "User message or assistant response in session",
   "type": "object",
   "allOf": [
-    { "$ref": "../_common/base_event.v1.json" }
+    {
+      "$ref": "../_common/base_event.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
@@ -17,48 +19,55 @@
       "type": "object",
       "properties": {
         "session_id": {
-          "type": "string",
-          "description": "Claude Code session ID"
+          "type": "string"
         },
         "thread_id": {
-          "type": ["string", "null"],
-          "description": "Thread ID"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "role": {
-          "type": "string",
-          "enum": ["user", "assistant"],
-          "description": "Message role"
+          "type": "string"
         },
         "content": {
-          "type": "string",
-          "description": "Message content"
+          "type": "string"
         },
         "turn_number": {
-          "type": "integer",
-          "minimum": 1,
-          "description": "Conversation turn number"
+          "type": "integer"
         },
         "tokens": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Tokens in this message"
+          "type": [
+            "integer",
+            "null"
+          ]
         },
         "model": {
-          "$ref": "../_common/types.v1.json#/$defs/model_name",
-          "description": "Model used for this message"
+          "type": [
+            "string",
+            "null"
+          ]
         },
         "thinking_included": {
-          "type": "boolean",
-          "description": "Whether thinking tokens were included"
+          "type": "boolean"
         },
         "tool_calls": {
           "type": "array",
-          "items": { "type": "string" },
-          "description": "Tool names called in this turn"
+          "items": {
+            "type": "string"
+          }
         }
       },
-      "required": ["session_id", "role", "content", "turn_number"]
+      "required": [
+        "session_id",
+        "role",
+        "content",
+        "turn_number"
+      ]
     }
   },
-  "required": ["event_type", "payload"]
+  "required": [
+    "event_type",
+    "payload"
+  ]
 }
