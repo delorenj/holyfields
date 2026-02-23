@@ -4,7 +4,10 @@ from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
-class Payload(BaseModel):
+
+class AgentMessageReceivedV1(BaseModel):
+    """Inbound message received by an agent"""
+
     agent_name: str = Field(..., description="Name of the agent that received the message")
     channel: str = Field(..., description="Channel the message came from")
     sender: str = Field(..., description="User name or ID who sent the message")
@@ -12,9 +15,4 @@ class Payload(BaseModel):
     message_length: int = Field(..., description="Total length of the message in characters")
     session_key: str = Field(..., description="Session identifier (e.g., 'agent:main:main')")
 
-
-class AgentMessageReceivedV1(BaseModel):
-    """Inbound message received by an agent"""
-
-    event_type: Literal["agent.message.received"] = "agent.message.received"
-    payload: Payload
+    EVENT_TYPE: str = "agent.message.received"

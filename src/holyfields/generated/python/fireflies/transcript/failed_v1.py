@@ -4,7 +4,10 @@ from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
-class Payload(BaseModel):
+
+class FirefliesTranscriptFailedV1(BaseModel):
+    """Transcription or processing failed"""
+
     failed_stage: str = Field(..., description="Stage that failed")
     error_message: str = Field(..., description="Error message")
     error_code: Optional[str | None] = Field(None, description="Error code")
@@ -13,9 +16,4 @@ class Payload(BaseModel):
     retry_count: Optional[int] = Field(None, description="Retry attempts")
     is_retryable: Optional[bool] = Field(None, description="Whether error is retryable")
 
-
-class FirefliesTranscriptFailedV1(BaseModel):
-    """Transcription or processing failed"""
-
-    event_type: Literal["fireflies.transcript.failed"] = "fireflies.transcript.failed"
-    payload: Payload
+    EVENT_TYPE: str = "fireflies.transcript.failed"

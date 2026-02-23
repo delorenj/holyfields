@@ -5,8 +5,12 @@
   "description": "Emitted when comments are extracted from agent response. Payload contains comment metadata for analytics.",
   "type": "object",
   "allOf": [
-    { "$ref": "../_common/base_event.v1.json" },
-    { "$ref": "../_common/theboard_extension.v1.json" }
+    {
+      "$ref": "../_common/base_event.v1.json"
+    },
+    {
+      "$ref": "../_common/theboard_extension.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
@@ -34,7 +38,14 @@
         },
         "category": {
           "type": "string",
-          "enum": ["technical_decision", "risk", "implementation_detail", "observation", "question", "other"],
+          "enum": [
+            "technical_decision",
+            "risk",
+            "implementation_detail",
+            "observation",
+            "question",
+            "other"
+          ],
           "description": "Comment category classified by notetaker agent"
         },
         "novelty_score": {
@@ -42,10 +53,24 @@
           "minimum": 0,
           "maximum": 1,
           "description": "Novelty score (0.0 = repetitive, 1.0 = novel)"
+        },
+        "meeting_id": {
+          "$ref": "../_common/types.v1.json#/$defs/uuid",
+          "description": "Unique meeting identifier"
         }
       },
-      "required": ["round_num", "agent_name", "comment_text", "category", "novelty_score"]
+      "required": [
+        "meeting_id",
+        "round_num",
+        "agent_name",
+        "comment_text",
+        "category",
+        "novelty_score"
+      ]
     }
   },
-  "required": ["event_type", "payload"]
+  "required": [
+    "event_type",
+    "payload"
+  ]
 }

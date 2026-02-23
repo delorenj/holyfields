@@ -5,8 +5,12 @@
   "description": "Emitted when a meeting round completes. Payload contains round metrics and convergence indicators.",
   "type": "object",
   "allOf": [
-    { "$ref": "../_common/base_event.v1.json" },
-    { "$ref": "../_common/theboard_extension.v1.json" }
+    {
+      "$ref": "../_common/base_event.v1.json"
+    },
+    {
+      "$ref": "../_common/theboard_extension.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
@@ -51,10 +55,26 @@
           "type": "number",
           "minimum": 0,
           "description": "Cost in USD for this round's LLM calls"
+        },
+        "meeting_id": {
+          "$ref": "../_common/types.v1.json#/$defs/uuid",
+          "description": "Unique meeting identifier"
         }
       },
-      "required": ["round_num", "agent_name", "response_length", "comment_count", "avg_novelty", "tokens_used", "cost"]
+      "required": [
+        "meeting_id",
+        "round_num",
+        "agent_name",
+        "response_length",
+        "comment_count",
+        "avg_novelty",
+        "tokens_used",
+        "cost"
+      ]
     }
   },
-  "required": ["event_type", "payload"]
+  "required": [
+    "event_type",
+    "payload"
+  ]
 }

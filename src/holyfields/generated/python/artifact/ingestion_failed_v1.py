@@ -4,7 +4,10 @@ from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
-class Payload(BaseModel):
+
+class ArtifactIngestionFailedV1(BaseModel):
+    """Artifact ingestion into RAG failed"""
+
     artifact_uri: str = Field(..., description="URI of the artifact that failed ingestion")
     artifact_kind: str = Field(..., description="Type of artifact")
     error_message: str = Field(..., description="Error message")
@@ -12,9 +15,4 @@ class Payload(BaseModel):
     retry_count: Optional[int] = Field(None, description="Number of retry attempts")
     is_retryable: Optional[bool] = Field(None, description="Whether the error is retryable")
 
-
-class ArtifactIngestionFailedV1(BaseModel):
-    """Artifact ingestion into RAG failed"""
-
-    event_type: Literal["artifact.ingestion.failed"] = "artifact.ingestion.failed"
-    payload: Payload
+    EVENT_TYPE: str = "artifact.ingestion.failed"

@@ -5,8 +5,12 @@
   "description": "Emitted when meeting completes successfully. Payload contains final meeting state, metrics, and extracted insights.",
   "type": "object",
   "allOf": [
-    { "$ref": "../_common/base_event.v1.json" },
-    { "$ref": "../_common/theboard_extension.v1.json" }
+    {
+      "$ref": "../_common/base_event.v1.json"
+    },
+    {
+      "$ref": "../_common/theboard_extension.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
@@ -38,20 +42,41 @@
         },
         "stopping_reason": {
           "type": "string",
-          "enum": ["convergence", "max_rounds", "manual"],
+          "enum": [
+            "convergence",
+            "max_rounds",
+            "manual"
+          ],
           "description": "Reason the meeting stopped"
         },
         "top_comments": {
           "type": "array",
-          "items": { "$ref": "#/$defs/top_comment" },
+          "items": {
+            "$ref": "#/$defs/top_comment"
+          },
           "maxItems": 5,
           "description": "Top 5 comments ranked by novelty score"
+        },
+        "meeting_id": {
+          "$ref": "../_common/types.v1.json#/$defs/uuid",
+          "description": "Unique meeting identifier"
         }
       },
-      "required": ["total_rounds", "total_comments", "total_cost", "convergence_detected", "stopping_reason", "top_comments"]
+      "required": [
+        "meeting_id",
+        "total_rounds",
+        "total_comments",
+        "total_cost",
+        "convergence_detected",
+        "stopping_reason",
+        "top_comments"
+      ]
     }
   },
-  "required": ["event_type", "payload"],
+  "required": [
+    "event_type",
+    "payload"
+  ],
   "$defs": {
     "top_comment": {
       "type": "object",
@@ -64,7 +89,14 @@
         },
         "category": {
           "type": "string",
-          "enum": ["technical_decision", "risk", "implementation_detail", "observation", "question", "other"],
+          "enum": [
+            "technical_decision",
+            "risk",
+            "implementation_detail",
+            "observation",
+            "question",
+            "other"
+          ],
           "description": "Comment category"
         },
         "novelty_score": {
@@ -83,7 +115,13 @@
           "description": "Round number when comment was made"
         }
       },
-      "required": ["text", "category", "novelty_score", "agent_name", "round_num"]
+      "required": [
+        "text",
+        "category",
+        "novelty_score",
+        "agent_name",
+        "round_num"
+      ]
     }
   }
 }

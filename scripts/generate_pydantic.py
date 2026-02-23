@@ -195,7 +195,15 @@ def generate_nested_model(name: str, props: dict, required: set, indent: str = "
 
 
 def generate_model(rel_path: str, schema: dict) -> str:
-    """Generate Pydantic model code for a single schema."""
+    """Generate Pydantic model code for a single schema.
+    
+    Generates TWO classes per schema:
+    1. Envelope class (full event with event_type + payload): {ClassName}
+    2. Flat payload class (fields directly on class): {ClassName}Payload
+    
+    The flat payload class is compatible with Bloodbank's BaseEvent pattern
+    where EventEnvelope[T] wraps the payload type T.
+    """
     class_name = schema_to_class_name(rel_path)
     title = schema.get("title", rel_path)
     description = schema.get("description", "")
@@ -210,19 +218,30 @@ def generate_model(rel_path: str, schema: dict) -> str:
     ]
 
     lines = []
-    
-    # Check for payload with properties — generate a typed Payload model
+
+    # Extract payload properties
     payload_prop = schema.get("properties", {}).get("payload", {})
-    payload_class_name = None
+    payload_fields = []
     if payload_prop.get("type") == "object" and "properties" in payload_prop:
         payload_required = set(payload_prop.get("required", []))
-        payload_model_lines, payload_class_name = generate_nested_model(
-            "Payload", payload_prop["properties"], payload_required
-        )
-        lines.append("")
-        lines.extend(payload_model_lines)
+        for prop_name, prop in payload_prop["properties"].items():
+            if prop_name.startswith("$"):
+                continue
+            py_type = resolve_type(prop, prop_name)
+            if py_type in ("__BASE__", "__EXTENSION__"):
+                continue
+            field_name = prop_name
+            if field_name.startswith("_"):
+                field_name = field_name.lstrip("_")
+            if field_name in ("type", "class", "from", "import", "in", "is", "not", "and", "or"):
+                field_name = f"{field_name}_"
+            needs_alias = field_name != prop_name
+            is_required = prop_name in payload_required
+            desc = prop.get("description", "")
+            payload_fields.append((field_name, prop_name, py_type, is_required, desc, needs_alias))
 
-    # Main event class
+    # --- Flat payload class (Bloodbank-compatible) ---
+    lines.append("")
     lines.append("")
     lines.append(f"class {class_name}(BaseModel):")
     if description:
@@ -231,42 +250,35 @@ def generate_model(rel_path: str, schema: dict) -> str:
         lines.append(f'    """{title}"""')
     lines.append("")
 
-    # event_type field (usually const)
-    event_type_prop = schema.get("properties", {}).get("event_type", {})
-    if "const" in event_type_prop:
-        const_val = event_type_prop["const"]
-        lines.append(f'    event_type: Literal["{const_val}"] = "{const_val}"')
+    if not payload_fields:
+        lines.append("    pass")
     else:
-        lines.append("    event_type: str")
+        # Required fields first, then optional
+        required = [f for f in payload_fields if f[3]]
+        optional = [f for f in payload_fields if not f[3]]
 
-    # payload field — typed or dict
-    if payload_class_name:
-        lines.append(f"    payload: {payload_class_name}")
-    elif "payload" in schema.get("properties", {}):
-        lines.append("    payload: dict[str, Any]")
+        for field_name, prop_name, py_type, is_required, desc, needs_alias in required:
+            alias_part = f', alias="{prop_name}"' if needs_alias else ""
+            if desc or needs_alias:
+                lines.append(f'    {field_name}: {py_type} = Field(...{alias_part}, description="{desc}")')
+            else:
+                lines.append(f"    {field_name}: {py_type}")
 
-    # Any other top-level properties (besides event_type, payload)
-    all_props = schema.get("properties", {})
-    for sub in schema.get("allOf", []):
-        if "properties" in sub:
-            all_props.update(sub["properties"])
-    
-    required_fields = set(schema.get("required", []))
-    for sub in schema.get("allOf", []):
-        required_fields.update(sub.get("required", []))
+        for field_name, prop_name, py_type, is_required, desc, needs_alias in optional:
+            alias_part = f', alias="{prop_name}"' if needs_alias else ""
+            if desc or needs_alias:
+                lines.append(f'    {field_name}: Optional[{py_type}] = Field(None{alias_part}, description="{desc}")')
+            else:
+                lines.append(f"    {field_name}: Optional[{py_type}] = None")
 
-    for prop_name, prop in all_props.items():
-        if prop_name in ("event_type", "payload", "$schema", "$id"):
-            continue
-        py_type = resolve_type(prop, prop_name)
-        if py_type in ("__BASE__", "__EXTENSION__"):
-            continue
-        field_name = f"{prop_name}_" if prop_name in ("type", "class", "from", "import") else prop_name
-        is_required = prop_name in required_fields
-        if is_required:
-            lines.append(f"    {field_name}: {py_type}")
-        else:
-            lines.append(f"    {field_name}: Optional[{py_type}] = None")
+    # --- Event type constant ---
+    event_type_prop = schema.get("properties", {}).get("event_type", {})
+    event_type_const = event_type_prop.get("const")
+
+    # Add EVENT_TYPE class var for routing registry
+    if event_type_const:
+        lines.append("")
+        lines.append(f'    EVENT_TYPE: str = "{event_type_const}"')
 
     return "\n".join(imports + lines) + "\n"
 

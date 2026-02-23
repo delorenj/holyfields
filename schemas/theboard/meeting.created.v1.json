@@ -5,8 +5,12 @@
   "description": "Emitted when a new meeting is created. Payload contains initial meeting configuration.",
   "type": "object",
   "allOf": [
-    { "$ref": "../_common/base_event.v1.json" },
-    { "$ref": "../_common/theboard_extension.v1.json" }
+    {
+      "$ref": "../_common/base_event.v1.json"
+    },
+    {
+      "$ref": "../_common/theboard_extension.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
@@ -25,7 +29,10 @@
         },
         "strategy": {
           "type": "string",
-          "enum": ["sequential", "greedy"],
+          "enum": [
+            "sequential",
+            "greedy"
+          ],
           "description": "Meeting execution strategy"
         },
         "max_rounds": {
@@ -35,13 +42,28 @@
           "description": "Maximum number of discussion rounds before stopping"
         },
         "agent_count": {
-          "type": ["integer", "null"],
+          "type": [
+            "integer",
+            "null"
+          ],
           "minimum": 1,
           "description": "Number of agents participating (null if not yet selected)"
+        },
+        "meeting_id": {
+          "$ref": "../_common/types.v1.json#/$defs/uuid",
+          "description": "Unique meeting identifier"
         }
       },
-      "required": ["topic", "strategy", "max_rounds"]
+      "required": [
+        "meeting_id",
+        "topic",
+        "strategy",
+        "max_rounds"
+      ]
     }
   },
-  "required": ["event_type", "payload"]
+  "required": [
+    "event_type",
+    "payload"
+  ]
 }

@@ -4,7 +4,10 @@ from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
-class Payload(BaseModel):
+
+class AgentMessageSentV1(BaseModel):
+    """Outbound response sent by an agent"""
+
     agent_name: str = Field(..., description="Name of the agent that sent the message")
     channel: str = Field(..., description="Channel the message was sent to")
     message_preview: str = Field(..., description="First 200 characters of the response")
@@ -13,9 +16,4 @@ class Payload(BaseModel):
     tokens_used: Optional[int] = Field(None, description="Total tokens consumed (input + output)")
     duration_ms: Optional[int] = Field(None, description="Time to generate response in milliseconds")
 
-
-class AgentMessageSentV1(BaseModel):
-    """Outbound response sent by an agent"""
-
-    event_type: Literal["agent.message.sent"] = "agent.message.sent"
-    payload: Payload
+    EVENT_TYPE: str = "agent.message.sent"

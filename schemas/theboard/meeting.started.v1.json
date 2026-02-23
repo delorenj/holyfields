@@ -5,8 +5,12 @@
   "description": "Emitted when a meeting transitions to RUNNING status. Payload contains selected agents and execution configuration.",
   "type": "object",
   "allOf": [
-    { "$ref": "../_common/base_event.v1.json" },
-    { "$ref": "../_common/theboard_extension.v1.json" }
+    {
+      "$ref": "../_common/base_event.v1.json"
+    },
+    {
+      "$ref": "../_common/theboard_extension.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
@@ -19,7 +23,9 @@
       "properties": {
         "selected_agents": {
           "type": "array",
-          "items": { "$ref": "../_common/types.v1.json#/$defs/agent_name" },
+          "items": {
+            "$ref": "../_common/types.v1.json#/$defs/agent_name"
+          },
           "minItems": 1,
           "uniqueItems": true,
           "description": "Names of AI agents selected for this meeting"
@@ -28,10 +34,21 @@
           "type": "integer",
           "minimum": 1,
           "description": "Total number of agents participating"
+        },
+        "meeting_id": {
+          "$ref": "../_common/types.v1.json#/$defs/uuid",
+          "description": "Unique meeting identifier"
         }
       },
-      "required": ["selected_agents", "agent_count"]
+      "required": [
+        "meeting_id",
+        "selected_agents",
+        "agent_count"
+      ]
     }
   },
-  "required": ["event_type", "payload"]
+  "required": [
+    "event_type",
+    "payload"
+  ]
 }

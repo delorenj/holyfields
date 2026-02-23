@@ -4,7 +4,10 @@ from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
 
-class Payload(BaseModel):
+
+class LlmErrorV1(BaseModel):
+    """[DEPRECATED] Use agent.thread.error instead. LLM interaction failed."""
+
     provider: str = Field(..., description="LLM provider")
     error_message: str = Field(..., description="Error message")
     model: Optional[str | None] = Field(None, description="Model being used")
@@ -13,9 +16,4 @@ class Payload(BaseModel):
     retry_count: Optional[int] = Field(None, description="Retry attempts")
     deprecated: Optional[str] = Field(None, alias="_deprecated", description="Deprecation notice")
 
-
-class LlmErrorV1(BaseModel):
-    """[DEPRECATED] Use agent.thread.error instead. LLM interaction failed."""
-
-    event_type: Literal["llm.error"] = "llm.error"
-    payload: Payload
+    EVENT_TYPE: str = "llm.error"
