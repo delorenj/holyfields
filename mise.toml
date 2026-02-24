@@ -52,6 +52,10 @@ echo "Type checking TypeScript..."
 bun run typecheck
 """
 
+[tasks."check:drift"]
+description = "Check for schema drift (regenerate + git diff)"
+run = "bash scripts/check_drift.sh"
+
 [tasks.ci]
 description = "Run full CI validation"
-depends = ["validate:schemas", "generate:all", "typecheck", "test:all"]
+depends = ["validate:schemas", "generate:all", "check:drift", "typecheck", "test:all"]

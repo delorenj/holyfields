@@ -6,7 +6,6 @@ To regenerate: python scripts/generate_pydantic.py
 
 __version__ = '1.0.0'
 
-from .agent.error_v1 import AgentErrorV1
 from .agent.feedback.requested_v1 import AgentFeedbackRequestedV1
 from .agent.feedback.response_v1 import AgentFeedbackResponseV1
 from .agent.heartbeat_v1 import AgentHeartbeatV1
@@ -53,7 +52,6 @@ from .theboard.meeting_round_completed_v1 import TheboardMeetingRoundCompletedV1
 from .theboard.meeting_started_v1 import TheboardMeetingStartedV1
 
 __all__ = [
-    "AgentErrorV1",
     "AgentFeedbackRequestedV1",
     "AgentFeedbackResponseV1",
     "AgentHeartbeatV1",

@@ -1,0 +1,42 @@
+name: Schema Drift Check
+
+on:
+  push:
+    branches: [main, "feat/*"]
+    paths:
+      - "schemas/**"
+      - "src/holyfields/generated/**"
+      - "scripts/generate_pydantic.py"
+  pull_request:
+    paths:
+      - "schemas/**"
+      - "src/holyfields/generated/**"
+      - "scripts/generate_pydantic.py"
+
+jobs:
+  drift-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pydantic
+
+      - name: Regenerate models
+        run: python3 scripts/generate_pydantic.py
+
+      - name: Check for drift
+        run: |
+          if git diff --exit-code -- src/holyfields/generated/; then
+            echo "✅ No schema drift"
+          else
+            echo "❌ Schema drift detected!"
+            echo ""
+            echo "Generated models don't match committed versions."
+            echo "Run: python3 scripts/generate_pydantic.py && git add src/holyfields/generated/"
+            exit 1
+          fi
