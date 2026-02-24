@@ -1,0 +1,163 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/overworld/user_profile.v1.json",
+  "title": "User Profile Event",
+  "description": "Emitted when a user's profile or preferences change: account updates, preference changes, premium status, or history milestones. Routing: overworld.user.profile_updated",
+  "type": "object",
+  "allOf": [{ "$ref": "../_common/base_event.v1.json" }],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "overworld.user.profile_updated",
+      "description": "Routing key for user profile events"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "integer",
+          "description": "ID of the user"
+        },
+        "update_type": {
+          "type": "string",
+          "enum": [
+            "account_created",
+            "email_verified",
+            "oauth_linked",
+            "premium_activated",
+            "premium_deactivated",
+            "preferences_changed",
+            "history_milestone"
+          ],
+          "description": "What aspect of the profile changed"
+        },
+        "account": {
+          "type": ["object", "null"],
+          "description": "Account details for account-related updates",
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email",
+              "description": "User email (may be masked for privacy)"
+            },
+            "oauth_provider": {
+              "type": ["string", "null"],
+              "enum": ["google", "github", "discord", null],
+              "description": "OAuth provider if linked"
+            },
+            "is_verified": {
+              "type": "boolean"
+            },
+            "is_premium": {
+              "type": "boolean"
+            }
+          },
+          "required": ["email", "is_verified", "is_premium"]
+        },
+        "preferences": {
+          "type": ["object", "null"],
+          "description": "User preferences when update_type is preferences_changed",
+          "properties": {
+            "changed_fields": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "List of preference field names that changed"
+            },
+            "default_theme_id": {
+              "type": ["integer", "null"],
+              "description": "User's preferred default theme"
+            },
+            "default_map_visibility": {
+              "type": ["string", "null"],
+              "enum": ["private", "unlisted", "public", null],
+              "description": "Default visibility for new maps"
+            },
+            "color_mode": {
+              "type": ["string", "null"],
+              "enum": ["light", "dark", "system", null],
+              "description": "UI color mode preference"
+            },
+            "language": {
+              "type": ["string", "null"],
+              "pattern": "^[a-z]{2}(-[A-Z]{2})?$",
+              "description": "ISO 639-1 language code (e.g., 'en', 'ja')"
+            },
+            "notifications_enabled": {
+              "type": ["boolean", "null"],
+              "description": "Whether email notifications are enabled"
+            },
+            "auto_watermark": {
+              "type": ["boolean", "null"],
+              "description": "Whether to auto-apply watermark on free-tier maps"
+            }
+          },
+          "required": ["changed_fields"]
+        },
+        "history": {
+          "type": ["object", "null"],
+          "description": "History milestone details when update_type is history_milestone",
+          "properties": {
+            "milestone": {
+              "type": "string",
+              "enum": [
+                "first_map_created",
+                "maps_count_10",
+                "maps_count_50",
+                "maps_count_100",
+                "first_export",
+                "first_premium_theme",
+                "first_shared_map",
+                "consensus_first_run"
+              ],
+              "description": "What milestone was reached"
+            },
+            "total_maps_created": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Total maps created by this user"
+            },
+            "total_exports": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Total exports performed"
+            },
+            "member_since": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Account creation timestamp (ISO 8601)"
+            }
+          },
+          "required": ["milestone"]
+        },
+        "premium": {
+          "type": ["object", "null"],
+          "description": "Premium status details for premium-related updates",
+          "properties": {
+            "activated": {
+              "type": "boolean",
+              "description": "Whether premium was activated (true) or deactivated (false)"
+            },
+            "plan": {
+              "type": ["string", "null"],
+              "enum": ["monthly", "annual", "lifetime", null],
+              "description": "Premium plan type"
+            },
+            "source": {
+              "type": ["string", "null"],
+              "enum": ["stripe", "apple_iap", "google_play", "promo", null],
+              "description": "Payment source"
+            },
+            "token_balance": {
+              "type": ["integer", "null"],
+              "minimum": 0,
+              "description": "Current token balance after premium change"
+            }
+          },
+          "required": ["activated"]
+        }
+      },
+      "required": ["user_id", "update_type"]
+    }
+  },
+  "required": ["event_type", "payload"]
+}

@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/overworld/map_customization.v1.json",
+  "title": "Map Customization Event",
+  "description": "Emitted when a user customizes map appearance: theme selection, color overrides, marker placement/removal, or watermark changes. Routing: overworld.map.customized",
+  "type": "object",
+  "allOf": [{ "$ref": "../_common/base_event.v1.json" }],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "overworld.map.customized",
+      "description": "Routing key for map customization events"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "map_id": {
+          "type": "integer",
+          "description": "ID of the map being customized"
+        },
+        "user_id": {
+          "type": "integer",
+          "description": "ID of the user performing customization"
+        },
+        "customization_type": {
+          "type": "string",
+          "enum": ["theme_applied", "colors_changed", "marker_added", "marker_removed", "marker_updated", "watermark_toggled", "name_changed"],
+          "description": "What kind of customization was performed"
+        },
+        "theme": {
+          "type": ["object", "null"],
+          "description": "Theme details when customization_type is theme_applied",
+          "properties": {
+            "theme_id": {
+              "type": "integer",
+              "description": "ID of the applied theme"
+            },
+            "theme_name": {
+              "type": "string",
+              "description": "Display name of the theme"
+            },
+            "is_premium": {
+              "type": "boolean",
+              "description": "Whether this is a premium theme"
+            },
+            "previous_theme_id": {
+              "type": ["integer", "null"],
+              "description": "ID of the previously applied theme (null if first theme)"
+            }
+          },
+          "required": ["theme_id", "theme_name", "is_premium"]
+        },
+        "colors": {
+          "type": ["object", "null"],
+          "description": "Color override details when customization_type is colors_changed",
+          "properties": {
+            "overrides": {
+              "type": "object",
+              "description": "Map of color slot names to hex values",
+              "additionalProperties": {
+                "type": "string",
+                "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$"
+              }
+            },
+            "previous_overrides": {
+              "type": ["object", "null"],
+              "description": "Previous color overrides (null if first change)",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "required": ["overrides"]
+        },
+        "marker": {
+          "type": ["object", "null"],
+          "description": "Marker details when customization_type involves markers",
+          "properties": {
+            "marker_id": {
+              "type": "string",
+              "description": "Unique identifier for the marker (UUID)"
+            },
+            "marker_type": {
+              "type": "string",
+              "enum": ["pin", "label", "icon", "region", "path", "custom"],
+              "description": "Visual type of the marker"
+            },
+            "position": {
+              "type": "object",
+              "description": "Position on the map",
+              "properties": {
+                "x": { "type": "number" },
+                "y": { "type": "number" },
+                "level": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 4,
+                  "description": "Hierarchy level (L0-L4)"
+                },
+                "parent_node_id": {
+                  "type": ["string", "null"],
+                  "description": "ID of the parent hierarchy node"
+                }
+              },
+              "required": ["x", "y", "level"]
+            },
+            "label": {
+              "type": ["string", "null"],
+              "description": "Display label for the marker"
+            },
+            "icon": {
+              "type": ["string", "null"],
+              "description": "Icon identifier or emoji"
+            },
+            "color": {
+              "type": ["string", "null"],
+              "pattern": "^#[0-9a-fA-F]{6}([0-9a-fA-F]{2})?$",
+              "description": "Marker color as hex"
+            },
+            "metadata": {
+              "type": ["object", "null"],
+              "description": "Arbitrary marker metadata",
+              "additionalProperties": true
+            }
+          },
+          "required": ["marker_id", "marker_type", "position"]
+        },
+        "watermark": {
+          "type": ["object", "null"],
+          "description": "Watermark details when customization_type is watermark_toggled",
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "description": "Whether watermark is now enabled"
+            },
+            "reason": {
+              "type": ["string", "null"],
+              "enum": ["premium_upgrade", "user_toggle", null],
+              "description": "Why the watermark state changed"
+            }
+          },
+          "required": ["enabled"]
+        }
+      },
+      "required": ["map_id", "user_id", "customization_type"]
+    }
+  },
+  "required": ["event_type", "payload"]
+}

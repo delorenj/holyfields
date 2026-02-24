@@ -40,6 +40,8 @@ from .github.pr_created_v1 import GithubPrCreatedV1
 from .llm.error_v1 import LlmErrorV1
 from .llm.prompt_v1 import LlmPromptV1
 from .llm.response_v1 import LlmResponseV1
+from .overworld.map_customization_v1 import OverworldMapCustomizationV1
+from .overworld.user_profile_v1 import OverworldUserProfileV1
 from .session.thread.agent.action_v1 import SessionThreadAgentActionV1
 from .session.thread.agent.thinking_v1 import SessionThreadAgentThinkingV1
 from .session.thread.end_v1 import SessionThreadEndV1
@@ -91,6 +93,8 @@ __all__ = [
     "LlmErrorV1",
     "LlmPromptV1",
     "LlmResponseV1",
+    "OverworldMapCustomizationV1",
+    "OverworldUserProfileV1",
     "SessionThreadAgentActionV1",
     "SessionThreadAgentThinkingV1",
     "SessionThreadEndV1",
