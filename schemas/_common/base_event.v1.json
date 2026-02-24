@@ -32,6 +32,10 @@
       "$ref": "types.v1.json#/$defs/uuid",
       "description": "UUID for tracing related events through the system. All events in a causal chain share the same correlation_id."
     },
+    "causation_id": {
+      "$ref": "types.v1.json#/$defs/uuid",
+      "description": "ID of the event or command that directly caused this event. Together with correlation_id, forms a directed acyclic graph of causation. Optional for root events."
+    },
     "source": {
       "type": "object",
       "description": "Metadata about the source that emitted this event",

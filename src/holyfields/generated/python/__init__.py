@@ -27,6 +27,10 @@ from .agent.tool_invoked_v1 import AgentToolInvokedV1
 from .artifact.ingestion_failed_v1 import ArtifactIngestionFailedV1
 from .artifact.lifecycle_v1 import ArtifactLifecycleV1
 from .asset.created_v1 import AssetCreatedV1
+from .command.ack_v1 import CommandAckV1
+from .command.envelope_v1 import CommandEnvelopeV1
+from .command.error_v1 import CommandErrorV1
+from .command.result_v1 import CommandResultV1
 from .conversation.message_posted_v1 import ConversationMessagePostedV1
 from .fireflies.transcript.failed_v1 import FirefliesTranscriptFailedV1
 from .fireflies.transcript.processed_v1 import FirefliesTranscriptProcessedV1
@@ -74,6 +78,10 @@ __all__ = [
     "ArtifactIngestionFailedV1",
     "ArtifactLifecycleV1",
     "AssetCreatedV1",
+    "CommandAckV1",
+    "CommandEnvelopeV1",
+    "CommandErrorV1",
+    "CommandResultV1",
     "ConversationMessagePostedV1",
     "FirefliesTranscriptFailedV1",
     "FirefliesTranscriptProcessedV1",
