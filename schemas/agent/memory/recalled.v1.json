@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/agent/memory/recalled.v1.json",
+  "title": "Agent Memory Recalled Event",
+  "description": "Broadcast event emitted when an agent recalls memory.",
+  "type": "object",
+  "allOf": [
+    {
+      "$ref": "../../_common/base_event.v1.json"
+    }
+  ],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "agent.memory.recalled",
+      "description": "Event type discriminator"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "agent_name": {
+          "$ref": "../../_common/types.v1.json#/$defs/agent_name",
+          "description": "Agent that performed recall"
+        },
+        "session_key": {
+          "$ref": "../../_common/types.v1.json#/$defs/session_key",
+          "description": "Session where recall occurred"
+        },
+        "memory_bank": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Logical memory bank name"
+        },
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Recall query used"
+        },
+        "result_count": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of recall results returned"
+        },
+        "top_result_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Top result IDs (if available)"
+        },
+        "recall_budget": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "low",
+            "medium",
+            "high",
+            null
+          ],
+          "description": "Recall budget hint if provided"
+        },
+        "latency_ms": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0,
+          "description": "Recall latency in milliseconds"
+        },
+        "metadata": {
+          "type": "object",
+          "description": "Provider/session specific metadata"
+        }
+      },
+      "required": [
+        "agent_name",
+        "session_key",
+        "memory_bank",
+        "query",
+        "result_count"
+      ]
+    }
+  },
+  "required": [
+    "event_type",
+    "payload"
+  ]
+}
