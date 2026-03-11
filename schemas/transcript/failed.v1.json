@@ -1,16 +1,18 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://33god.dev/schemas/fireflies/transcript/failed.v1.json",
+  "$id": "https://33god.dev/schemas/transcript/failed.v1.json",
   "title": "Fireflies Transcript Failed Event",
-  "description": "Transcription or processing failed",
+  "description": "[CANONICAL] Transcription or processing failed Source provider currently fireflies. Legacy alias: fireflies.transcript.failed.",
   "type": "object",
   "allOf": [
-    { "$ref": "../../_common/base_event.v1.json" }
+    {
+      "$ref": "../../_common/base_event.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
       "type": "string",
-      "const": "fireflies.transcript.failed",
+      "const": "transcript.failed",
       "description": "Event type discriminator"
     },
     "payload": {
@@ -18,7 +20,11 @@
       "properties": {
         "failed_stage": {
           "type": "string",
-          "enum": ["upload", "transcription", "processing"],
+          "enum": [
+            "upload",
+            "transcription",
+            "processing"
+          ],
           "description": "Stage that failed"
         },
         "error_message": {
@@ -26,15 +32,24 @@
           "description": "Error message"
         },
         "error_code": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Error code"
         },
         "transcript_id": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Transcript ID if available"
         },
         "media_file": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Original file path"
         },
         "retry_count": {
@@ -47,8 +62,14 @@
           "description": "Whether error is retryable"
         }
       },
-      "required": ["failed_stage", "error_message"]
+      "required": [
+        "failed_stage",
+        "error_message"
+      ]
     }
   },
-  "required": ["event_type", "payload"]
+  "required": [
+    "event_type",
+    "payload"
+  ]
 }

@@ -1,16 +1,18 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://33god.dev/schemas/fireflies/transcript/ready.v1.json",
+  "$id": "https://33god.dev/schemas/transcript/ready.v1.json",
   "title": "Fireflies Transcript Ready Event",
-  "description": "Fireflies completed transcription",
+  "description": "[CANONICAL] Fireflies completed transcription Source provider currently fireflies. Legacy alias: fireflies.transcript.ready.",
   "type": "object",
   "allOf": [
-    { "$ref": "../../_common/base_event.v1.json" }
+    {
+      "$ref": "../../_common/base_event.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
       "type": "string",
-      "const": "fireflies.transcript.ready",
+      "const": "transcript.ready",
       "description": "Event type discriminator"
     },
     "payload": {
@@ -40,12 +42,18 @@
           "description": "URL to transcript"
         },
         "audio_url": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "uri",
           "description": "URL to audio if available"
         },
         "video_url": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "format": "uri",
           "description": "URL to video if available"
         },
@@ -54,7 +62,10 @@
           "description": "Transcript sentences"
         },
         "summary": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Meeting summary if generated"
         },
         "participants": {
@@ -62,15 +73,35 @@
           "items": {
             "type": "object",
             "properties": {
-              "name": { "type": "string" },
-              "email": { "type": ["string", "null"], "format": "email" }
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "format": "email"
+              }
             },
-            "required": ["name"]
+            "required": [
+              "name"
+            ]
           }
         }
       },
-      "required": ["transcript_id", "title", "date", "duration_minutes", "transcript_url", "sentences"]
+      "required": [
+        "transcript_id",
+        "title",
+        "date",
+        "duration_minutes",
+        "transcript_url",
+        "sentences"
+      ]
     }
   },
-  "required": ["event_type", "payload"]
+  "required": [
+    "event_type",
+    "payload"
+  ]
 }

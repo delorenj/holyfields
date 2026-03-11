@@ -1,16 +1,18 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://33god.dev/schemas/fireflies/transcript/processed.v1.json",
+  "$id": "https://33god.dev/schemas/transcript/processed.v1.json",
   "title": "Fireflies Transcript Processed Event",
-  "description": "Transcript was ingested into RAG system",
+  "description": "[CANONICAL] Transcript was ingested into RAG system Source provider currently fireflies. Legacy alias: fireflies.transcript.processed.",
   "type": "object",
   "allOf": [
-    { "$ref": "../../_common/base_event.v1.json" }
+    {
+      "$ref": "../../_common/base_event.v1.json"
+    }
   ],
   "properties": {
     "event_type": {
       "type": "string",
-      "const": "fireflies.transcript.processed",
+      "const": "transcript.processed",
       "description": "Event type discriminator"
     },
     "payload": {
@@ -53,12 +55,23 @@
           "description": "Number of chunks created"
         },
         "embedding_model": {
-          "type": ["string", "null"],
+          "type": [
+            "string",
+            "null"
+          ],
           "description": "Model used for embeddings"
         }
       },
-      "required": ["transcript_id", "rag_document_id", "title", "vector_store"]
+      "required": [
+        "transcript_id",
+        "rag_document_id",
+        "title",
+        "vector_store"
+      ]
     }
   },
-  "required": ["event_type", "payload"]
+  "required": [
+    "event_type",
+    "payload"
+  ]
 }

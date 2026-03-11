@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://33god.dev/schemas/theboard/meeting.converged.v1.json",
+  "$id": "https://33god.dev/schemas/meeting/converged.v1.json",
   "title": "Meeting Converged Event",
-  "description": "Emitted when meeting reaches convergence. Payload contains convergence metrics and stopping criteria.",
+  "description": "[CANONICAL] Emitted when meeting reaches convergence. Payload contains convergence metrics and stopping criteria. Legacy alias: theboard.meeting.converged.",
   "type": "object",
   "allOf": [
     {
@@ -15,7 +15,7 @@
   "properties": {
     "event_type": {
       "type": "string",
-      "const": "theboard.meeting.converged",
+      "const": "meeting.converged",
       "description": "Event type discriminator"
     },
     "payload": {

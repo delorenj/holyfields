@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://33god.dev/schemas/theboard/meeting.created.v1.json",
+  "$id": "https://33god.dev/schemas/meeting/created.v1.json",
   "title": "Meeting Created Event",
-  "description": "Emitted when a new meeting is created. Payload contains initial meeting configuration.",
+  "description": "[CANONICAL] Emitted when a new meeting is created. Payload contains initial meeting configuration. Legacy alias: theboard.meeting.created.",
   "type": "object",
   "allOf": [
     {
@@ -15,7 +15,7 @@
   "properties": {
     "event_type": {
       "type": "string",
-      "const": "theboard.meeting.created",
+      "const": "meeting.created",
       "description": "Event type discriminator"
     },
     "payload": {

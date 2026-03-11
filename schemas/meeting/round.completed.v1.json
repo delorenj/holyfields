@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://33god.dev/schemas/theboard/meeting.round_completed.v1.json",
+  "$id": "https://33god.dev/schemas/meeting/round.completed.v1.json",
   "title": "Round Completed Event",
-  "description": "Emitted when a meeting round completes. Payload contains round metrics and convergence indicators.",
+  "description": "[CANONICAL] Emitted when a meeting round completes. Payload contains round metrics and convergence indicators. Legacy alias: theboard.meeting.round_completed.",
   "type": "object",
   "allOf": [
     {
@@ -15,7 +15,7 @@
   "properties": {
     "event_type": {
       "type": "string",
-      "const": "theboard.meeting.round_completed",
+      "const": "meeting.round_completed",
       "description": "Event type discriminator"
     },
     "payload": {

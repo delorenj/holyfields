@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://33god.dev/schemas/theboard/meeting.comment_extracted.v1.json",
+  "$id": "https://33god.dev/schemas/meeting/comment.extracted.v1.json",
   "title": "Comment Extracted Event",
-  "description": "Emitted when comments are extracted from agent response. Payload contains comment metadata for analytics.",
+  "description": "[CANONICAL] Emitted when comments are extracted from agent response. Payload contains comment metadata for analytics. Legacy alias: theboard.meeting.comment_extracted.",
   "type": "object",
   "allOf": [
     {
@@ -15,7 +15,7 @@
   "properties": {
     "event_type": {
       "type": "string",
-      "const": "theboard.meeting.comment_extracted",
+      "const": "meeting.comment_extracted",
       "description": "Event type discriminator"
     },
     "payload": {
