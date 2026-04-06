@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/agent/learning/lesson.promoted.v1.json",
+  "title": "Agent Learning Lesson Promoted Event",
+  "description": "Validated lesson promoted into the active retrieval overlay",
+  "type": "object",
+  "allOf": [
+    { "$ref": "../../_common/base_event.v1.json" }
+  ],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "agent.learning.lesson.promoted",
+      "description": "Event type discriminator"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "lesson_id": {
+          "$ref": "../../_common/types.v1.json#/$defs/uuid",
+          "description": "Stable identifier for the active lesson"
+        },
+        "candidate_id": {
+          "$ref": "../../_common/types.v1.json#/$defs/uuid",
+          "description": "Candidate lesson that was promoted"
+        },
+        "lesson_text": {
+          "type": "string",
+          "description": "Validated lesson text applied at runtime"
+        },
+        "scope_skills": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Skills or execution surfaces where the lesson should be retrieved"
+        },
+        "trigger_tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Tags used to match the lesson to future tasks"
+        },
+        "rollout_status": {
+          "type": "string",
+          "enum": ["shadow", "active"],
+          "description": "Whether the lesson is being observed or actively injected"
+        },
+        "lesson_version": {
+          "$ref": "../../_common/types.v1.json#/$defs/semantic_version",
+          "description": "Semantic version of the promoted lesson payload"
+        },
+        "ttl_days": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Time-to-live before the lesson must be revalidated"
+        }
+      },
+      "required": ["lesson_id", "candidate_id", "lesson_text", "scope_skills", "rollout_status", "ttl_days"]
+    }
+  },
+  "required": ["event_type", "payload"]
+}

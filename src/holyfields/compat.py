@@ -13,6 +13,30 @@ from holyfields.generated.python.agent.error_v1 import AgentErrorV1 as AgentErro
 from holyfields.generated.python.agent.feedback.requested_v1 import AgentFeedbackRequestedV1 as AgentFeedbackRequested
 from holyfields.generated.python.agent.feedback.response_v1 import AgentFeedbackResponseV1 as AgentFeedbackResponse
 from holyfields.generated.python.agent.heartbeat_v1 import AgentHeartbeatV1 as AgentHeartbeat
+from holyfields.generated.python.agent.learning.candidate_extracted_v1 import (
+    AgentLearningCandidateExtractedV1 as AgentLearningCandidateExtracted,
+)
+from holyfields.generated.python.agent.learning.candidate_validated_v1 import (
+    AgentLearningCandidateValidatedV1 as AgentLearningCandidateValidated,
+)
+from holyfields.generated.python.agent.learning.episode_created_v1 import (
+    AgentLearningEpisodeCreatedV1 as AgentLearningEpisodeCreated,
+)
+from holyfields.generated.python.agent.learning.lesson_promoted_v1 import (
+    AgentLearningLessonPromotedV1 as AgentLearningLessonPromoted,
+)
+from holyfields.generated.python.agent.learning.lesson_rejected_v1 import (
+    AgentLearningLessonRejectedV1 as AgentLearningLessonRejected,
+)
+from holyfields.generated.python.agent.learning.lesson_rolled_back_v1 import (
+    AgentLearningLessonRolledBackV1 as AgentLearningLessonRolledBack,
+)
+from holyfields.generated.python.agent.learning.observation_recorded_v1 import (
+    AgentLearningObservationRecordedV1 as AgentLearningObservationRecorded,
+)
+from holyfields.generated.python.agent.learning.retrieval_applied_v1 import (
+    AgentLearningRetrievalAppliedV1 as AgentLearningRetrievalApplied,
+)
 from holyfields.generated.python.agent.message_received_v1 import AgentMessageReceivedV1 as AgentMessageReceived
 from holyfields.generated.python.agent.message_sent_v1 import AgentMessageSentV1 as AgentMessageSent
 from holyfields.generated.python.agent.session_ended_v1 import AgentSessionEndedV1 as AgentSessionEnded
@@ -52,6 +76,10 @@ __all__ = [
     "AgentSessionEnded", "AgentSessionStarted", "AgentStateChanged",
     "AgentSubagentCompleted", "AgentSubagentSpawned",
     "AgentTaskAssigned", "AgentTaskCompleted",
+    "AgentLearningObservationRecorded", "AgentLearningEpisodeCreated",
+    "AgentLearningCandidateExtracted", "AgentLearningCandidateValidated",
+    "AgentLearningLessonPromoted", "AgentLearningLessonRejected",
+    "AgentLearningLessonRolledBack", "AgentLearningRetrievalApplied",
     "AgentThreadErrorPayload", "AgentThreadPrompt", "AgentThreadResponse",
     "AgentToolCompleted", "AgentToolInvoked",
     # TheBoard

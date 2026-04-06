@@ -11,7 +11,7 @@ class AgentToolCompletedV1(BaseModel):
     agent_name: str = Field(..., description="Name of the agent that invoked the tool")
     tool_name: str = Field(..., description="Name of the tool")
     success: bool = Field(..., description="Whether the tool completed successfully")
-    duration_ms: Optional[int] = Field(None, description="Tool execution time in milliseconds")
-    output_preview: Optional[str | None] = Field(None, description="First 200 characters of tool output")
+    duration_ms: Optional[int] = Field(None, description="Tool execution time in milliseconds", ge=0)
+    output_preview: Optional[str | None] = Field(None, description="First 200 characters of tool output", max_length=200)
 
     EVENT_TYPE: str = "agent.tool.completed"

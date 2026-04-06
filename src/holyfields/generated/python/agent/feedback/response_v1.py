@@ -10,7 +10,7 @@ class AgentFeedbackResponseV1(BaseModel):
 
     agent_id: str = Field(..., description="AgentForge registry ID")
     response: str = Field(..., description="Agent's response text")
-    status: str = Field(..., description="Response status")
+    status: Literal["ok", "error"] = Field(..., description="Response status")
     letta_agent_id: Optional[str | None] = Field(None, description="Letta agent ID if different")
     error_message: Optional[str | None] = Field(None, description="Error message if status is error")
     metadata: Optional[dict[str, Any]] = Field(None, description="Additional metadata")

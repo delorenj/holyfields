@@ -12,7 +12,7 @@ class ArtifactIngestionFailedV1(BaseModel):
     artifact_kind: str = Field(..., description="Type of artifact")
     error_message: str = Field(..., description="Error message")
     error_code: Optional[str | None] = Field(None, description="Error code if available")
-    retry_count: Optional[int] = Field(None, description="Number of retry attempts")
+    retry_count: Optional[int] = Field(None, description="Number of retry attempts", ge=0)
     is_retryable: Optional[bool] = Field(None, description="Whether the error is retryable")
 
     EVENT_TYPE: str = "artifact.ingestion.failed"

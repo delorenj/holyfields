@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/agent/learning/retrieval.applied.v1.json",
+  "title": "Agent Learning Retrieval Applied Event",
+  "description": "Active lessons retrieved and applied to a live task or session",
+  "type": "object",
+  "allOf": [
+    { "$ref": "../../_common/base_event.v1.json" }
+  ],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "agent.learning.retrieval.applied",
+      "description": "Event type discriminator"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "retrieval_id": {
+          "$ref": "../../_common/types.v1.json#/$defs/uuid",
+          "description": "Stable identifier for this retrieval application"
+        },
+        "agent_name": {
+          "$ref": "../../_common/types.v1.json#/$defs/agent_name",
+          "description": "Name of the agent receiving the retrieved lessons"
+        },
+        "session_key": {
+          "$ref": "../../_common/types.v1.json#/$defs/session_key",
+          "description": "Session identifier where the retrieval happened"
+        },
+        "lesson_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "../../_common/types.v1.json#/$defs/uuid"
+          },
+          "description": "Promoted lessons injected into the live task context"
+        },
+        "task_tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Task tags used to select the active lessons"
+        },
+        "target_skill": {
+          "type": ["string", "null"],
+          "description": "Primary target skill or overlay consumer"
+        }
+      },
+      "required": ["retrieval_id", "agent_name", "session_key", "lesson_ids"]
+    }
+  },
+  "required": ["event_type", "payload"]
+}

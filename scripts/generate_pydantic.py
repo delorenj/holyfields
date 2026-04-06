@@ -90,6 +90,45 @@ def resolve_type(prop: dict, prop_name: str) -> str:
     return TYPE_MAP.get(schema_type, "Any")
 
 
+def apply_enum_type(prop: dict, py_type: str) -> str:
+    """Convert enum-valued properties to Literal types when possible."""
+    if "enum" not in prop:
+        return py_type
+
+    enum_vals = prop["enum"]
+    if all(isinstance(v, str) for v in enum_vals):
+        literals = ", ".join(f'"{v}"' for v in enum_vals)
+        return f"Literal[{literals}]"
+    if all(isinstance(v, (str, type(None))) for v in enum_vals):
+        literals = ", ".join("None" if v is None else f'"{v}"' for v in enum_vals)
+        return f"Literal[{literals}]"
+    return py_type
+
+
+def build_field_args(prop: dict, desc: str, alias: str | None = None) -> str:
+    """Build Field(...) keyword arguments from a JSON Schema property."""
+    args = []
+    if alias:
+        args.append(f'alias="{alias}"')
+    if desc:
+        args.append(f'description="{desc}"')
+
+    if "minimum" in prop:
+        args.append(f"ge={prop['minimum']}")
+    if "maximum" in prop:
+        args.append(f"le={prop['maximum']}")
+    if "minLength" in prop:
+        args.append(f"min_length={prop['minLength']}")
+    if "maxLength" in prop:
+        args.append(f"max_length={prop['maxLength']}")
+    if "minItems" in prop:
+        args.append(f"min_length={prop['minItems']}")
+    if "maxItems" in prop:
+        args.append(f"max_length={prop['maxItems']}")
+
+    return ", ".join(args)
+
+
 def extract_properties(schema: dict) -> list[tuple[str, str, bool, Any]]:
     """Extract (name, type, required, default) tuples from schema properties.
     
@@ -115,7 +154,7 @@ def extract_properties(schema: dict) -> list[tuple[str, str, bool, Any]]:
         if name.startswith("$"):
             continue
 
-        py_type = resolve_type(prop, name)
+        py_type = apply_enum_type(prop, resolve_type(prop, name))
         if py_type in ("__BASE__", "__EXTENSION__"):
             continue
 
@@ -151,7 +190,7 @@ def generate_nested_model(name: str, props: dict, required: set, indent: str = "
         if prop_name.startswith("$"):
             continue
         
-        py_type = resolve_type(prop, prop_name)
+        py_type = apply_enum_type(prop, resolve_type(prop, prop_name))
         if py_type in ("__BASE__", "__EXTENSION__"):
             continue
         
@@ -174,15 +213,15 @@ def generate_nested_model(name: str, props: dict, required: set, indent: str = "
         needs_alias = field_name != prop_name
         desc = prop.get("description", "")
         
-        alias_part = f', alias="{prop_name}"' if needs_alias else ""
+        field_args = build_field_args(prop, desc, prop_name if needs_alias else None)
         if is_required:
-            if desc or needs_alias:
-                model_lines.append(f'{indent}    {field_name}: {py_type} = Field(...{alias_part}, description="{desc}")')
+            if field_args:
+                model_lines.append(f"{indent}    {field_name}: {py_type} = Field(..., {field_args})")
             else:
                 model_lines.append(f"{indent}    {field_name}: {py_type}")
         else:
-            if desc or needs_alias:
-                model_lines.append(f'{indent}    {field_name}: Optional[{py_type}] = Field(None{alias_part}, description="{desc}")')
+            if field_args:
+                model_lines.append(f"{indent}    {field_name}: Optional[{py_type}] = Field(None, {field_args})")
             else:
                 model_lines.append(f"{indent}    {field_name}: Optional[{py_type}] = None")
         has_fields = True
@@ -227,7 +266,7 @@ def generate_model(rel_path: str, schema: dict) -> str:
         for prop_name, prop in payload_prop["properties"].items():
             if prop_name.startswith("$"):
                 continue
-            py_type = resolve_type(prop, prop_name)
+            py_type = apply_enum_type(prop, resolve_type(prop, prop_name))
             if py_type in ("__BASE__", "__EXTENSION__"):
                 continue
             field_name = prop_name
@@ -258,16 +297,18 @@ def generate_model(rel_path: str, schema: dict) -> str:
         optional = [f for f in payload_fields if not f[3]]
 
         for field_name, prop_name, py_type, is_required, desc, needs_alias in required:
-            alias_part = f', alias="{prop_name}"' if needs_alias else ""
-            if desc or needs_alias:
-                lines.append(f'    {field_name}: {py_type} = Field(...{alias_part}, description="{desc}")')
+            prop = payload_prop["properties"][prop_name]
+            field_args = build_field_args(prop, desc, prop_name if needs_alias else None)
+            if field_args:
+                lines.append(f"    {field_name}: {py_type} = Field(..., {field_args})")
             else:
                 lines.append(f"    {field_name}: {py_type}")
 
         for field_name, prop_name, py_type, is_required, desc, needs_alias in optional:
-            alias_part = f', alias="{prop_name}"' if needs_alias else ""
-            if desc or needs_alias:
-                lines.append(f'    {field_name}: Optional[{py_type}] = Field(None{alias_part}, description="{desc}")')
+            prop = payload_prop["properties"][prop_name]
+            field_args = build_field_args(prop, desc, prop_name if needs_alias else None)
+            if field_args:
+                lines.append(f"    {field_name}: Optional[{py_type}] = Field(None, {field_args})")
             else:
                 lines.append(f"    {field_name}: Optional[{py_type}] = None")
 

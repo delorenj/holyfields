@@ -8,8 +8,8 @@ from pydantic import BaseModel, Field
 class TheboardMeetingFailedV1(BaseModel):
     """Emitted when meeting execution fails. Payload contains error context for debugging."""
 
-    error_type: str = Field(..., description="Category of error that caused failure")
-    error_message: str = Field(..., description="Human-readable error message for debugging")
+    error_type: Literal["agent_error", "timeout", "network_error", "validation_error", "internal_error"] = Field(..., description="Category of error that caused failure")
+    error_message: str = Field(..., description="Human-readable error message for debugging", min_length=1, max_length=2000)
     meeting_id: str = Field(..., description="Unique meeting identifier")
     round_num: Optional[Any] = Field(None, description="Round number when failure occurred (null if before meeting started)")
     agent_name: Optional[Any] = Field(None, description="Agent that caused the error (null if not agent-specific)")
