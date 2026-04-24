@@ -67,15 +67,19 @@ jobs:
       # Layer 1: schemas validate as JSON Schema 2020-12 with $refs resolved
       # -----------------------------------------------------------------------
       - name: Validate JSON Schemas
-        run: bash scripts/validate_schemas.sh
+        # `uv run` activates the project venv so the inline `import jsonschema`
+        # in validate_schemas.sh resolves. Plain `bash` would use the system
+        # Python (from setup-python) which has no project deps.
+        run: uv run bash scripts/validate_schemas.sh
 
       # -----------------------------------------------------------------------
       # Layer 2: generators produce output for every schema
       # -----------------------------------------------------------------------
       - name: Generate Python (Pydantic)
-        run: bash scripts/generate_python.sh
+        run: uv run bash scripts/generate_python.sh
 
       - name: Generate TypeScript (Zod)
+        # No Python deps; bash + bun are sufficient.
         run: bash scripts/generate_typescript.sh
 
       # -----------------------------------------------------------------------
