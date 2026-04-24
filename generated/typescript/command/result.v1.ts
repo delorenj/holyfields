@@ -15,7 +15,7 @@ export const ResultEventSchema = z.object({
 /**Execution time from ack to result in milliseconds.*/
 "duration_ms": z.union([z.number().int().gte(0).describe("Execution time from ack to result in milliseconds."), z.null().describe("Execution time from ack to result in milliseconds.")]).describe("Execution time from ack to result in milliseconds.").default(null), 
 /**Action-specific result data. Null for skipped outcomes.*/
-"result_payload": z.union([z.record(z.string(), z.any()).describe("Action-specific result data. Null for skipped outcomes."), z.null().describe("Action-specific result data. Null for skipped outcomes.")]).describe("Action-specific result data. Null for skipped outcomes.").default(null), 
+"result_payload": z.union([z.record(z.any()).describe("Action-specific result data. Null for skipped outcomes."), z.null().describe("Action-specific result data. Null for skipped outcomes.")]).describe("Action-specific result data. Null for skipped outcomes.").default(null), 
 /**FSM version after transitioning back to idle.*/
 "fsm_version": z.number().int().gte(1).describe("FSM version after transitioning back to idle.") }) }).and(z.any()).describe("Emitted when an agent completes command execution. Contains outcome classification and optional result data.")
 export type ResultEvent = z.infer<typeof ResultEventSchema>

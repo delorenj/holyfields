@@ -15,5 +15,5 @@ export const ResponseEventSchema = z.object({
 /**Error message if status is error*/
 "error_message": z.union([z.string().describe("Error message if status is error"), z.null().describe("Error message if status is error")]).describe("Error message if status is error").optional(), 
 /**Additional metadata*/
-"metadata": z.record(z.string(), z.any()).describe("Additional metadata").optional() }) }).and(z.any()).describe("Agent feedback response")
+"metadata": z.record(z.any()).describe("Additional metadata").optional() }) }).and(z.any()).describe("Agent feedback response")
 export type ResponseEvent = z.infer<typeof ResponseEventSchema>

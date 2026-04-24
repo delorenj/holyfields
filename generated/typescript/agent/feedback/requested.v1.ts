@@ -11,7 +11,7 @@ export const RequestedEventSchema = z.object({
 /**Optional Letta agent ID override*/
 "letta_agent_id": z.union([z.string().describe("Optional Letta agent ID override"), z.null().describe("Optional Letta agent ID override")]).describe("Optional Letta agent ID override").optional(), 
 /**Optional context for the agent*/
-"context": z.record(z.string(), z.any()).describe("Optional context for the agent").optional(), 
+"context": z.record(z.any()).describe("Optional context for the agent").optional(), 
 /**Tags for this feedback request*/
 "tags": z.array(z.string()).describe("Tags for this feedback request").optional() }) }).and(z.any()).describe("Request feedback from a specific agent")
 export type RequestedEvent = z.infer<typeof RequestedEventSchema>

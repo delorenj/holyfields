@@ -23,5 +23,5 @@ export const DetectedEventSchema = z.object({
 /**Optional content hash for dedupe/correlation*/
 "sha256": z.union([z.string().regex(new RegExp("^[a-f0-9]{64}$")).describe("Optional content hash for dedupe/correlation"), z.null().describe("Optional content hash for dedupe/correlation")]).describe("Optional content hash for dedupe/correlation").optional(), 
 /**Additional source-specific metadata*/
-"metadata": z.record(z.string(), z.any()).describe("Additional source-specific metadata").optional() }) }).and(z.any()).describe("Audio file detected in the audio inbox and ready for downstream workflow processing")
+"metadata": z.record(z.any()).describe("Additional source-specific metadata").optional() }) }).and(z.any()).describe("Audio file detected in the audio inbox and ready for downstream workflow processing")
 export type DetectedEvent = z.infer<typeof DetectedEventSchema>

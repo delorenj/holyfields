@@ -19,5 +19,5 @@ export const EnvelopeEventSchema = z.object({
 /**Optional dedup key. Duplicates within 300s window get outcome='skipped'.*/
 "idempotency_key": z.union([z.string().describe("Optional dedup key. Duplicates within 300s window get outcome='skipped'."), z.null().describe("Optional dedup key. Duplicates within 300s window get outcome='skipped'.")]).describe("Optional dedup key. Duplicates within 300s window get outcome='skipped'.").default(null), 
 /**Action-specific data. Schema varies by action.*/
-"command_payload": z.record(z.string(), z.any()).describe("Action-specific data. Schema varies by action.") }) }).and(z.any()).describe("Wire-level envelope for commands sent to agents via Bloodbank. Commands are imperative ('do X'), unlike events which are declarative ('X happened').")
+"command_payload": z.record(z.any()).describe("Action-specific data. Schema varies by action.") }) }).and(z.any()).describe("Wire-level envelope for commands sent to agents via Bloodbank. Commands are imperative ('do X'), unlike events which are declarative ('X happened').")
 export type EnvelopeEvent = z.infer<typeof EnvelopeEventSchema>
