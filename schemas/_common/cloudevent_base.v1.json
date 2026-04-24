@@ -1,0 +1,132 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/_common/cloudevent_base.v1.json",
+  "title": "33GOD CloudEvents Base Envelope (v1)",
+  "description": "CloudEvents 1.0 envelope with 33GOD extension fields. Per ADR-0001, this is the wire-level shape for all v3 events published through Dapr + NATS JetStream. Legacy v2 events (RabbitMQ path) continue to use base_event.v1.json. See holyfields-cloudevents-audit-2026-04-24.md in the metarepo for rationale.",
+  "type": "object",
+  "properties": {
+    "specversion": {
+      "type": "string",
+      "const": "1.0",
+      "description": "CloudEvents specification version. Always '1.0' for v3."
+    },
+    "id": {
+      "$ref": "types.v1.json#/$defs/uuid",
+      "description": "Unique identifier for this event. Consumers dedup on this. Set by producer; Dapr preserves."
+    },
+    "source": {
+      "type": "string",
+      "format": "uri-reference",
+      "minLength": 1,
+      "description": "Event source as URI-reference. Convention: 'urn:33god:service:<service-name>' or 'urn:33god:cli:<tool-name>' for operator-issued events.",
+      "examples": [
+        "urn:33god:service:weather-service",
+        "urn:33god:cli:bb_v3"
+      ]
+    },
+    "type": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(\\.[a-z0-9]+)+$",
+      "minLength": 1,
+      "description": "Dotted event type. Convention: '<domain>.<entity>.<action>'. Also used as the Dapr topic name (and therefore the NATS subject) by convention 'event.<type>'.",
+      "examples": [
+        "artifact.version.created",
+        "weather.reading.recorded",
+        "agent.session.started"
+      ]
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Event subject. Convention: '<entity>/<id>'. Optional at the CloudEvents layer; strongly recommended for 33GOD so consumers can filter without parsing data.",
+      "examples": [
+        "artifact/550e8400-e29b-41d4-a716-446655440000",
+        "weather/sensor-42"
+      ]
+    },
+    "time": {
+      "$ref": "types.v1.json#/$defs/timestamp",
+      "description": "RFC3339 UTC timestamp when the event was produced. Preserved verbatim on replay."
+    },
+    "datacontenttype": {
+      "type": "string",
+      "default": "application/json",
+      "description": "MIME type of the data field. 33GOD default is 'application/json'."
+    },
+    "dataschema": {
+      "type": "string",
+      "format": "uri-reference",
+      "description": "Apicurio registry URI identifying the schema that validates data. Convention: 'apicurio://holyfields/<type>/versions/<n>'.",
+      "examples": [
+        "apicurio://holyfields/weather.reading.recorded/versions/1"
+      ]
+    },
+    "correlationid": {
+      "$ref": "types.v1.json#/$defs/uuid",
+      "description": "Correlation ID for causal chains. All events in one logical workflow share the same correlationid."
+    },
+    "causationid": {
+      "oneOf": [
+        { "$ref": "types.v1.json#/$defs/uuid" },
+        { "type": "null" }
+      ],
+      "default": null,
+      "description": "ID of the event or command that directly caused this one. Null for root events. Together with correlationid forms a DAG of causation."
+    },
+    "producer": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Canonical producer identity. Agent name, service ID, or 'operator:<name>' for human-issued events.",
+      "examples": [
+        "weather-service",
+        "agent:lenoon",
+        "operator:jarad"
+      ]
+    },
+    "service": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The service that emitted this event. Matches the service registry entry name.",
+      "examples": ["weather-service", "bloodbank", "candystore"]
+    },
+    "domain": {
+      "type": "string",
+      "minLength": 1,
+      "description": "The domain this event belongs to. Typically the first segment of 'type'.",
+      "examples": ["weather", "artifact", "agent"]
+    },
+    "schemaref": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Short schema reference, distinct from dataschema (which is the full URI). Useful for log / trace contexts where the URI is too noisy.",
+      "examples": [
+        "weather.reading.recorded.v1",
+        "artifact.version.created.v1"
+      ]
+    },
+    "traceparent": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{2}-[0-9a-f]{32}-[0-9a-f]{16}-[0-9a-f]{2}$",
+      "description": "W3C Trace Context traceparent header. Zero-trace placeholder is '00-00000000000000000000000000000000-0000000000000000-00'.",
+      "examples": [
+        "00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01"
+      ]
+    },
+    "data": {
+      "type": "object",
+      "description": "Domain-specific event payload. Validated separately by the domain schema identified by dataschema / schemaref."
+    }
+  },
+  "required": [
+    "specversion",
+    "id",
+    "source",
+    "type",
+    "time",
+    "correlationid",
+    "producer",
+    "service",
+    "domain",
+    "data"
+  ]
+}

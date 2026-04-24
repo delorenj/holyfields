@@ -12,7 +12,7 @@ class AgentSubagentCompletedV1(BaseModel):
     child_label: str = Field(..., description="Sub-agent label")
     child_session_key: str = Field(..., description="Session key of the sub-agent")
     success: bool = Field(..., description="Whether the sub-agent completed successfully")
-    duration_ms: Optional[int] = Field(None, description="Time the sub-agent ran in milliseconds")
-    result_preview: Optional[str | None] = Field(None, description="First 200 characters of the result")
+    duration_ms: Optional[int] = Field(None, description="Time the sub-agent ran in milliseconds", ge=0)
+    result_preview: Optional[str | None] = Field(None, description="First 200 characters of the result", max_length=200)
 
     EVENT_TYPE: str = "agent.subagent.completed"

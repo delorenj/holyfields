@@ -10,7 +10,7 @@ class AgentTaskAssignedV1(BaseModel):
 
     agent_name: str = Field(..., description="Name of the agent the task is assigned to")
     source: str = Field(..., description="Who assigned the task (e.g., 'plane', 'cack', 'jarad')")
-    task_type: str = Field(..., description="Type of task")
-    task_preview: str = Field(..., description="First 200 characters of the task description")
+    task_type: Literal["ticket", "message", "cron", "adhoc"] = Field(..., description="Type of task")
+    task_preview: str = Field(..., description="First 200 characters of the task description", max_length=200)
 
     EVENT_TYPE: str = "agent.task.assigned"

@@ -11,8 +11,8 @@ class AgentMessageReceivedV1(BaseModel):
     agent_name: str = Field(..., description="Name of the agent that received the message")
     channel: str = Field(..., description="Channel the message came from")
     sender: str = Field(..., description="User name or ID who sent the message")
-    message_preview: str = Field(..., description="First 200 characters of the message")
-    message_length: int = Field(..., description="Total length of the message in characters")
+    message_preview: str = Field(..., description="First 200 characters of the message", max_length=200)
+    message_length: int = Field(..., description="Total length of the message in characters", ge=0)
     session_key: str = Field(..., description="Session identifier (e.g., 'agent:main:main')")
 
     EVENT_TYPE: str = "agent.message.received"
