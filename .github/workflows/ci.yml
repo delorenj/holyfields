@@ -57,8 +57,11 @@ jobs:
           curl -fsSL https://bun.sh/install | bash
           echo "$HOME/.bun/bin" >> $GITHUB_PATH
 
-      - name: Install Python deps (uv sync)
-        run: uv sync
+      - name: Install Python deps (uv sync --all-extras)
+        # --all-extras pulls dev deps too (pytest, mypy, etc.) which the
+        # CloudEvents test step needs. Plain `uv sync` skips optional
+        # dependency groups by default.
+        run: uv sync --all-extras
 
       - name: Install TypeScript deps (bun install)
         run: bun install --frozen-lockfile
