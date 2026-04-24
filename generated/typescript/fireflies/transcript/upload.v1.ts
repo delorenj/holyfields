@@ -13,5 +13,7 @@ export const UploadEventSchema = z.object({
 /**Meeting title*/
 "title": z.union([z.string().describe("Meeting title"), z.null().describe("Meeting title")]).describe("Meeting title").optional(), 
 /**User requesting transcription*/
-"user_id": z.union([z.string().describe("User requesting transcription"), z.null().describe("User requesting transcription")]).describe("User requesting transcription").optional() }) }).and(z.any()).describe("Request to upload media to Fireflies for transcription")
+"user_id": z.union([z.string().describe("User requesting transcription"), z.null().describe("User requesting transcription")]).describe("User requesting transcription").optional(), 
+/**SHA256 hash of source audio file for deduplication*/
+"content_hash": z.union([z.string().describe("SHA256 hash of source audio file for deduplication"), z.null().describe("SHA256 hash of source audio file for deduplication")]).describe("SHA256 hash of source audio file for deduplication").optional() }) }).and(z.any()).describe("Request to upload media to Fireflies for transcription")
 export type UploadEvent = z.infer<typeof UploadEventSchema>

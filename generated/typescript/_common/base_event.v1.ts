@@ -12,6 +12,8 @@ export const BaseEvent = z.object({
 "version": z.any().describe("Schema version for this event type").default("1.0.0"), 
 /**UUID for tracing related events through the system. All events in a causal chain share the same correlation_id.*/
 "correlation_id": z.any().describe("UUID for tracing related events through the system. All events in a causal chain share the same correlation_id."), 
+/**ID of the event or command that directly caused this event. Together with correlation_id, forms a directed acyclic graph of causation. Optional for root events.*/
+"causation_id": z.any().describe("ID of the event or command that directly caused this event. Together with correlation_id, forms a directed acyclic graph of causation. Optional for root events.").optional(), 
 /**Metadata about the source that emitted this event*/
 "source": z.object({ 
 /**Hostname of the emitting machine*/

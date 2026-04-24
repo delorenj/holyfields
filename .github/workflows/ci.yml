@@ -1,0 +1,130 @@
+# Holyfields CI — schema validity + generator correctness + drift gate
+#
+# Implements the holyfields side of the CI gate contract defined in
+# the metarepo test plan (33GOD/docs/testing/test-plan.md).
+#
+# What this gates on every PR / push to main:
+#   1. JSON Schemas validate as JSON Schema 2020-12
+#   2. All schemas resolve their $refs
+#   3. Python generator produces output for every schema
+#   4. TypeScript generator produces output for every schema
+#   5. Generated artifacts match the committed versions (no drift)
+#   6. The CloudEvents v3 base envelope round-trips cleanly (11 cases)
+#   7. TypeScript typechecks
+#
+# Replaces the older schema-drift.yml; this is the comprehensive gate.
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  schema-and-generators:
+    name: Schemas + generators + drift + tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install uv
+        # uv is the Python project + dep manager. mise.toml uses it locally
+        # but CI uses pip-installed uv (one fewer layer than mise).
+        run: pip install --upgrade pip uv
+
+      - name: Install bun
+        # bun is the TS package manager + test runner. Used by the
+        # TypeScript generator (json-schema-to-zod) and the typecheck step.
+        run: |
+          curl -fsSL https://bun.sh/install | bash
+          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+
+      - name: Install Python deps (uv sync --all-extras)
+        # --all-extras pulls dev deps too (pytest, mypy, etc.) which the
+        # CloudEvents test step needs. Plain `uv sync` skips optional
+        # dependency groups by default.
+        run: uv sync --all-extras
+
+      - name: Install TypeScript deps (bun install)
+        run: bun install --frozen-lockfile
+
+      # -----------------------------------------------------------------------
+      # Layer 1: schemas validate as JSON Schema 2020-12 with $refs resolved
+      # -----------------------------------------------------------------------
+      - name: Validate JSON Schemas
+        # `uv run` activates the project venv so the inline `import jsonschema`
+        # in validate_schemas.sh resolves. Plain `bash` would use the system
+        # Python (from setup-python) which has no project deps.
+        run: uv run bash scripts/validate_schemas.sh
+
+      # -----------------------------------------------------------------------
+      # Layer 2: generators produce output for every schema
+      # -----------------------------------------------------------------------
+      - name: Generate Python (Pydantic)
+        run: uv run bash scripts/generate_python.sh
+
+      - name: Generate TypeScript (Zod)
+        # No Python deps; bash + bun are sufficient.
+        run: bash scripts/generate_typescript.sh
+
+      # -----------------------------------------------------------------------
+      # Layer 3: generated output matches committed versions (no drift)
+      # -----------------------------------------------------------------------
+      # We check both the Python output (under src/holyfields/generated/) and
+      # the TypeScript output (under generated/typescript/). If a schema was
+      # edited without re-running the generator, this catches it.
+      - name: Check Python drift
+        run: |
+          if ! git diff --exit-code -- src/holyfields/generated/; then
+            echo ""
+            echo "❌ Python schema drift detected"
+            echo "Run: bash scripts/generate_python.sh && git add src/holyfields/generated/"
+            exit 1
+          fi
+          echo "✅ No Python drift"
+
+      - name: Check TypeScript drift
+        run: |
+          if ! git diff --exit-code -- generated/typescript/; then
+            echo ""
+            echo "❌ TypeScript schema drift detected"
+            echo "Run: bash scripts/generate_typescript.sh && git add generated/typescript/"
+            exit 1
+          fi
+          echo "✅ No TypeScript drift"
+
+      # -----------------------------------------------------------------------
+      # Layer 4: contract tests
+      # -----------------------------------------------------------------------
+      # Only the CloudEvents v3 base test is gated. Three legacy test files
+      # (tests/python/test_agent_learning_models.py, test_generated_models.py,
+      # test_transcription_events.py) have pre-existing collection errors
+      # documented in the metarepo test plan as known debt; running them
+      # here would block unrelated PRs. Re-add them to this job once they
+      # collect cleanly.
+      - name: Run CloudEvents v3 base envelope tests
+        run: uv run pytest tests/test_cloudevent_base.py -v --no-cov
+
+      # -----------------------------------------------------------------------
+      # Layer 5: TypeScript typecheck
+      # -----------------------------------------------------------------------
+      - name: TypeScript typecheck
+        run: bun run typecheck

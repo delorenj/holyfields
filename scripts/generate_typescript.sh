@@ -69,7 +69,7 @@ find "$OUTPUT_DIR" -name "*.ts" -type f -exec sed -i 's/\.unique()//g' {} \; 2>/
 echo "📝 Creating barrel exports..."
 
 # Create root index.ts
-cat > "$OUTPUT_DIR/index.ts" <> 'EOF'
+cat > "$OUTPUT_DIR/index.ts" << 'EOF'
 /**
  * Holyfields TypeScript contracts (v1)
  *
