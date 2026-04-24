@@ -5,7 +5,7 @@ export const MeetingStartedEventSchema = z.object({
 /**Event type discriminator*/
 "event_type": z.literal("theboard.meeting.started").describe("Event type discriminator"), "payload": z.object({ 
 /**Names of AI agents selected for this meeting*/
-"selected_agents": z.array(z.any()).min(1).describe("Names of AI agents selected for this meeting"), 
+"selected_agents": z.array(z.any()).min(1).refine((arr) => arr.every((item, i) => arr.indexOf(item) == i), "All items must be unique!").describe("Names of AI agents selected for this meeting"), 
 /**Total number of agents participating*/
 "agent_count": z.number().int().gte(1).describe("Total number of agents participating"), 
 /**Unique meeting identifier*/

@@ -15,5 +15,5 @@ export const LifecycleEventSchema = z.object({
 /**Full content if applicable*/
 "content": z.union([z.string().describe("Full content if applicable"), z.null().describe("Full content if applicable")]).describe("Full content if applicable").optional(), 
 /**Additional metadata*/
-"metadata": z.record(z.any()).describe("Additional metadata").optional() }) }).and(z.any()).describe("Artifact was created, updated, or deleted")
+"metadata": z.record(z.string(), z.any()).describe("Additional metadata").optional() }) }).and(z.any()).describe("Artifact was created, updated, or deleted")
 export type LifecycleEvent = z.infer<typeof LifecycleEventSchema>
