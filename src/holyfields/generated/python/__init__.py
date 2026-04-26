@@ -54,6 +54,7 @@ from .session.thread.end_v1 import SessionThreadEndV1
 from .session.thread.error_v1 import SessionThreadErrorV1
 from .session.thread.message_v1 import SessionThreadMessageV1
 from .session.thread.start_v1 import SessionThreadStartV1
+from .system.heartbeat_tick_v1 import SystemHeartbeatTickV1
 from .theboard.meeting_comment_extracted_v1 import TheboardMeetingCommentExtractedV1
 from .theboard.meeting_completed_v1 import TheboardMeetingCompletedV1
 from .theboard.meeting_converged_v1 import TheboardMeetingConvergedV1
@@ -111,6 +112,7 @@ __all__ = [
     "SessionThreadErrorV1",
     "SessionThreadMessageV1",
     "SessionThreadStartV1",
+    "SystemHeartbeatTickV1",
     "TheboardMeetingCommentExtractedV1",
     "TheboardMeetingCompletedV1",
     "TheboardMeetingConvergedV1",
