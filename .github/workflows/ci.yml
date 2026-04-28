@@ -114,14 +114,13 @@ jobs:
       # -----------------------------------------------------------------------
       # Layer 4: contract tests
       # -----------------------------------------------------------------------
-      # Only the CloudEvents v3 base test is gated. Three legacy test files
-      # (tests/python/test_agent_learning_models.py, test_generated_models.py,
-      # test_transcription_events.py) have pre-existing collection errors
-      # documented in the metarepo test plan as known debt; running them
-      # here would block unrelated PRs. Re-add them to this job once they
-      # collect cleanly.
-      - name: Run CloudEvents v3 base envelope tests
-        run: uv run pytest tests/test_cloudevent_base.py -v --no-cov
+      # Runs every top-level v3 contract test file. The legacy `tests/python/`
+      # tree (test_agent_learning_models.py, test_generated_models.py,
+      # test_transcription_events.py) has pre-existing collection errors
+      # documented in the metarepo test plan as known debt; `--ignore` keeps
+      # it out of the gate. Re-fold once the legacy modules collect cleanly.
+      - name: Run v3 contract tests
+        run: uv run pytest tests/ --ignore=tests/python -v --no-cov
 
       # -----------------------------------------------------------------------
       # Layer 5: TypeScript typecheck
