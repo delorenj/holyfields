@@ -6,13 +6,6 @@ from pydantic import BaseModel, Field
 
 
 class AgentSubagentCompletedV1(BaseModel):
-    """Sub-agent finished its work"""
+    """Emitted when a subagent (a Task-tool spawned helper) finishes. Producer is the agent runtime (e.g. Claude Code via .claude/hooks/bloodbank-publisher.sh on SubagentStop). Distinct from agent.session.ended: the parent session continues; only the subagent has terminated. The session_id field points to the PARENT session so subagent activity rolls up under the originating session."""
 
-    agent_name: str = Field(..., description="Name of the parent agent")
-    child_label: str = Field(..., description="Sub-agent label")
-    child_session_key: str = Field(..., description="Session key of the sub-agent")
-    success: bool = Field(..., description="Whether the sub-agent completed successfully")
-    duration_ms: Optional[int] = Field(None, description="Time the sub-agent ran in milliseconds", ge=0)
-    result_preview: Optional[str | None] = Field(None, description="First 200 characters of the result", max_length=200)
-
-    EVENT_TYPE: str = "agent.subagent.completed"
+    pass
