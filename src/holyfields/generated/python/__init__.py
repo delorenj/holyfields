@@ -20,6 +20,7 @@ from .agent.learning.observation_recorded_v1 import AgentLearningObservationReco
 from .agent.learning.retrieval_applied_v1 import AgentLearningRetrievalAppliedV1
 from .agent.message_received_v1 import AgentMessageReceivedV1
 from .agent.message_sent_v1 import AgentMessageSentV1
+from .agent.prompt_submitted_v1 import AgentPromptSubmittedV1
 from .agent.session_ended_v1 import AgentSessionEndedV1
 from .agent.session_started_v1 import AgentSessionStartedV1
 from .agent.state_changed_v1 import AgentStateChangedV1
@@ -32,6 +33,7 @@ from .agent.thread.prompt_v1 import AgentThreadPromptV1
 from .agent.thread.response_v1 import AgentThreadResponseV1
 from .agent.tool_completed_v1 import AgentToolCompletedV1
 from .agent.tool_invoked_v1 import AgentToolInvokedV1
+from .agent.tool_requested_v1 import AgentToolRequestedV1
 from .artifact.audio.detected_v1 import ArtifactAudioDetectedV1
 from .artifact.ingestion_failed_v1 import ArtifactIngestionFailedV1
 from .artifact.lifecycle_v1 import ArtifactLifecycleV1
@@ -78,6 +80,7 @@ __all__ = [
     "AgentLearningRetrievalAppliedV1",
     "AgentMessageReceivedV1",
     "AgentMessageSentV1",
+    "AgentPromptSubmittedV1",
     "AgentSessionEndedV1",
     "AgentSessionStartedV1",
     "AgentStateChangedV1",
@@ -90,6 +93,7 @@ __all__ = [
     "AgentThreadResponseV1",
     "AgentToolCompletedV1",
     "AgentToolInvokedV1",
+    "AgentToolRequestedV1",
     "ArtifactAudioDetectedV1",
     "ArtifactIngestionFailedV1",
     "ArtifactLifecycleV1",

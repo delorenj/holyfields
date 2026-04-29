@@ -1,19 +1,19 @@
 import { z } from "zod"
 
-/**Sub-agent finished its work*/
+/**Emitted when a subagent (a Task-tool spawned helper) finishes. Producer is the agent runtime (e.g. Claude Code via .claude/hooks/bloodbank-publisher.sh on SubagentStop). Distinct from agent.session.ended: the parent session continues; only the subagent has terminated. The session_id field points to the PARENT session so subagent activity rolls up under the originating session.*/
 export const SubagentCompletedEventSchema = z.object({ 
-/**Event type discriminator*/
-"event_type": z.literal("agent.subagent.completed").describe("Event type discriminator"), "payload": z.object({ 
-/**Name of the parent agent*/
-"agent_name": z.any().describe("Name of the parent agent"), 
-/**Sub-agent label*/
-"child_label": z.string().describe("Sub-agent label"), 
-/**Session key of the sub-agent*/
-"child_session_key": z.any().describe("Session key of the sub-agent"), 
-/**Whether the sub-agent completed successfully*/
-"success": z.boolean().describe("Whether the sub-agent completed successfully"), 
-/**Time the sub-agent ran in milliseconds*/
-"duration_ms": z.number().int().gte(0).describe("Time the sub-agent ran in milliseconds").optional(), 
-/**First 200 characters of the result*/
-"result_preview": z.union([z.string().max(200).describe("First 200 characters of the result"), z.null().describe("First 200 characters of the result")]).describe("First 200 characters of the result").optional() }) }).and(z.any()).describe("Sub-agent finished its work")
+/**Locked event type for this schema.*/
+"type": z.literal("agent.subagent.completed").describe("Locked event type for this schema.").optional(), 
+/**Locked domain for this schema.*/
+"domain": z.literal("agent").describe("Locked domain for this schema.").optional(), 
+/**Subagent-completion payload.*/
+"data": z.object({ 
+/**Identifier of the PARENT session that spawned the subagent. Subagent activity rolls up under this session.*/
+"session_id": z.any().describe("Identifier of the PARENT session that spawned the subagent. Subagent activity rolls up under this session."), 
+/**Type/name of the subagent that finished (e.g. 'general-purpose', 'demo-architect'). Producer-defined; treat unknown values as opaque.*/
+"agent_type": z.string().describe("Type/name of the subagent that finished (e.g. 'general-purpose', 'demo-architect'). Producer-defined; treat unknown values as opaque.").optional(), 
+/**Why the subagent ended. completed: returned a result. error: unrecoverable failure. timeout: idle/total budget exceeded. user_stop: explicit termination.*/
+"stop_reason": z.enum(["completed","error","timeout","user_stop"]).describe("Why the subagent ended. completed: returned a result. error: unrecoverable failure. timeout: idle/total budget exceeded. user_stop: explicit termination."), 
+/**Absolute path the parent session was operating in when the subagent finished.*/
+"working_directory": z.string().describe("Absolute path the parent session was operating in when the subagent finished.").optional() }).strict().describe("Subagent-completion payload.") }).and(z.any()).describe("Emitted when a subagent (a Task-tool spawned helper) finishes. Producer is the agent runtime (e.g. Claude Code via .claude/hooks/bloodbank-publisher.sh on SubagentStop). Distinct from agent.session.ended: the parent session continues; only the subagent has terminated. The session_id field points to the PARENT session so subagent activity rolls up under the originating session.")
 export type SubagentCompletedEvent = z.infer<typeof SubagentCompletedEventSchema>
