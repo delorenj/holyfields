@@ -3,59 +3,76 @@ python = "3.12"
 node = "20"
 
 [tasks.install]
-description = "Install all dependencies"
+description = "Install Python and TypeScript workspace dependencies"
 run = """
 #!/usr/bin/env bash
-set -e
-echo "Installing Python dependencies..."
-uv sync
-echo "Installing TypeScript dependencies..."
+set -euo pipefail
+uv sync --all-groups --all-packages
 bun install
 """
 
 [tasks."generate:python"]
 description = "Generate Python Pydantic models from JSON Schema"
-run = "bash scripts/generate_python.sh"
+run = "uv run python tools/generators/generate_pydantic.py"
 
 [tasks."generate:typescript"]
 description = "Generate TypeScript Zod schemas and types from JSON Schema"
 run = "bash scripts/generate_typescript.sh"
 
 [tasks."generate:all"]
-description = "Generate all language artifacts"
+description = "Generate all committed language artifacts"
 depends = ["generate:python", "generate:typescript"]
 
 [tasks."validate:schemas"]
-description = "Validate all JSON schemas"
-run = "bash scripts/validate_schemas.sh"
+description = "Validate all JSON schemas and local references"
+run = "uv run bash scripts/validate_schemas.sh"
 
 [tasks."test:python"]
 description = "Run Python contract tests"
-run = "uv run pytest"
+run = "uv run --package holyfields pytest packages/python/tests"
 
 [tasks."test:typescript"]
 description = "Run TypeScript contract tests"
-run = "bun test"
+run = "cd packages/typescript && bun test"
 
 [tasks."test:all"]
 description = "Run all contract tests"
 depends = ["test:python", "test:typescript"]
 
 [tasks.typecheck]
-description = "Run type checking for generated code"
+description = "Run type checking for generated packages"
 run = """
 #!/usr/bin/env bash
-set -e
-echo "Type checking Python..."
-uv run mypy generated/python
-echo "Type checking TypeScript..."
+set -euo pipefail
+uv run mypy packages/python/src/holyfields tools/generators
+cd packages/typescript
 bun run typecheck
 """
 
+[tasks.build]
+description = "Build publishable package artifacts"
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+uv build --package holyfields
+cd packages/typescript
+bun run build
+bun pm pack
+"""
+
 [tasks."check:drift"]
-description = "Check for schema drift (regenerate + git diff)"
+description = "Regenerate committed artifacts and fail on drift"
 run = "bash scripts/check_drift.sh"
 
 [tasks.ci]
 description = "Run full CI validation"
-depends = ["validate:schemas", "generate:all", "check:drift", "typecheck", "test:all"]
+run = """
+#!/usr/bin/env bash
+set -euo pipefail
+mise run validate:schemas
+mise run generate:all
+mise run check:drift
+mise run typecheck
+mise run test:all
+mise run build
+"""

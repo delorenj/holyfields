@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/agent/learning/candidate.validated.v1.json",
+  "title": "Agent Learning Candidate Validated Event",
+  "description": "Validation result for a candidate lesson after replay and regression checks",
+  "type": "object",
+  "allOf": [
+    { "$ref": "../../_common/base_event.v1.json" }
+  ],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "agent.learning.candidate.validated",
+      "description": "Event type discriminator"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "candidate_id": {
+          "$ref": "../../_common/types.v1.json#/$defs/uuid",
+          "description": "Candidate lesson being validated"
+        },
+        "eval_suite": {
+          "type": "string",
+          "description": "Identifier for the eval or replay suite used during validation"
+        },
+        "decision": {
+          "type": "string",
+          "enum": ["promoted", "rejected", "needs_more_data"],
+          "description": "Outcome of candidate validation"
+        },
+        "replay_pass_rate_before": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Pass rate before applying the candidate rule"
+        },
+        "replay_pass_rate_after": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Pass rate after applying the candidate rule"
+        },
+        "regression_failures": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "description": "Number of regression failures introduced by the candidate"
+        },
+        "notes": {
+          "type": ["string", "null"],
+          "description": "Short explanation of why the candidate was promoted, rejected, or held"
+        }
+      },
+      "required": ["candidate_id", "eval_suite", "decision"]
+    }
+  },
+  "required": ["event_type", "payload"]
+}

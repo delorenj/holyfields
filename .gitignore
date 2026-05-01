@@ -15,6 +15,10 @@ node_modules/
 dist/
 *.tsbuildinfo
 coverage/
+packages/typescript/dist/
+packages/typescript/schemas/
+packages/typescript/*.tgz
+packages/python/dist/
 
 # Generated artifacts (decision: commit generated code for now)
 # generated/

@@ -1,39 +1,50 @@
-# Holyfields — Agent Guide
+# Holyfields - Agent Guide
 
-Event schema registry and contract system. JSON Schema is the single source of truth; Python (Pydantic) and TypeScript (Zod) artifacts are generated.
+Holyfields is the 33GOD event schema registry and contract package workspace.
+JSON Schema is the source of truth. Language packages are generated from those
+schemas.
 
-## Tech Stack
+## Architecture
 
-- **Source of Truth:** JSON Schema
-- **Python:** Pydantic models (generated via datamodel-code-generator)
-- **TypeScript:** Zod schemas (generated)
-- **Tools:** Python 3.12, Node 20, uv, bun
+- `schemas/` contains versioned JSON Schemas.
+- `packages/python/` publishes the `holyfields` Python package with generated
+  Pydantic models.
+- `packages/typescript/` publishes the `@33god/holyfields` npm package with
+  generated Zod schemas and TypeScript types.
+- `tools/generators/` contains deterministic generators.
+- `scripts/` contains stable command wrappers for `mise` and CI.
 
-## Commands (mise)
+## Commands
 
 | Task | Command |
-|------|---------|
+| --- | --- |
 | Install deps | `mise run install` |
 | Generate Python | `mise run generate:python` |
 | Generate TypeScript | `mise run generate:typescript` |
-| Generate All | `mise run generate:all` |
-| Validate Schemas | `mise run validate:schemas` |
-| Test Python | `mise run test:python` (pytest) |
-| Test TypeScript | `mise run test:typescript` (bun test) |
-| Test All | `mise run test:all` |
-| Type Check | `mise run typecheck` (mypy + tsc) |
-| Check Drift | `mise run check:drift` |
+| Generate all | `mise run generate:all` |
+| Validate schemas | `mise run validate:schemas` |
+| Test Python | `mise run test:python` |
+| Test TypeScript | `mise run test:typescript` |
+| Test all | `mise run test:all` |
+| Typecheck | `mise run typecheck` |
+| Check drift | `mise run check:drift` |
+| Build packages | `mise run build` |
 | Full CI | `mise run ci` |
 
 ## Workflow
 
-1. Edit JSON Schema files in `schemas/`
-2. Run `mise run generate:all` to regenerate language bindings
-3. Run `mise run check:drift` to verify no uncommitted drift
-4. Run `mise run ci` before committing
+1. Edit JSON Schema files in `schemas/`.
+2. Run `mise run validate:schemas`.
+3. Run `mise run generate:all`.
+4. Run `mise run check:drift`.
+5. Run `mise run ci` before committing.
 
-## Anti-Patterns
+## Anti-patterns
 
-- **Never** hand-edit generated code in `generated/` — always modify the JSON Schema source
-- **Never** add fields to Pydantic/Zod models directly — schema drift will break CI
-- **Never** skip `check:drift` before committing schema changes
+- Never hand-edit generated code in `packages/*/src/generated` or
+  `packages/python/src/holyfields/generated`.
+- Never add fields directly to generated Pydantic or Zod artifacts.
+- Never leave language artifacts out of sync with `schemas/`.
+- Never keep excluded legacy tests as silent debt.
+- Never split language packages into separate repos unless schema ownership and
+  release ownership become independent.

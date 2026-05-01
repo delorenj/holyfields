@@ -1,31 +1,6 @@
 {
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "ESNext",
-    "lib": ["ES2022"],
-    "moduleResolution": "bundler",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "outDir": "./dist",
-    "rootDir": "./",
-    "types": ["node", "vitest/globals"]
-  },
-  "include": [
-    "generated/typescript/**/*",
-    "tests/typescript/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    // Pre-existing broken tests excluded from typecheck. They reference
-    // generator outputs that no longer exist (theboard meeting events,
-    // whisperlivekit transcription). Same class of debt as the Python
-    // pytest collection errors flagged in the metarepo test plan.
-    // Re-include once the tests are rewritten against current outputs.
-    "tests/typescript/generated_schemas.test.ts",
-    "tests/typescript/transcription_events.test.ts"
+  "files": [],
+  "references": [
+    { "path": "./packages/typescript" }
   ]
 }

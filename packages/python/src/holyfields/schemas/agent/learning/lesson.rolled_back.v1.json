@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/agent/learning/lesson.rolled_back.v1.json",
+  "title": "Agent Learning Lesson Rolled Back Event",
+  "description": "Previously promoted lesson rolled back after poor runtime performance or operator review",
+  "type": "object",
+  "allOf": [
+    { "$ref": "../../_common/base_event.v1.json" }
+  ],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "agent.learning.lesson.rolled_back",
+      "description": "Event type discriminator"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "lesson_id": {
+          "$ref": "../../_common/types.v1.json#/$defs/uuid",
+          "description": "Active lesson being rolled back"
+        },
+        "rollback_reason": {
+          "type": "string",
+          "description": "Why the promoted lesson was disabled"
+        },
+        "rollback_scope": {
+          "type": "string",
+          "enum": ["partial", "full"],
+          "description": "Whether the rollback was partial or complete"
+        },
+        "replacement_lesson_id": {
+          "type": ["string", "null"],
+          "description": "Replacement lesson id if a new lesson superseded the rollback"
+        }
+      },
+      "required": ["lesson_id", "rollback_reason", "rollback_scope"]
+    }
+  },
+  "required": ["event_type", "payload"]
+}

@@ -1,19 +1,3 @@
-# Holyfields CI — schema validity + generator correctness + drift gate
-#
-# Implements the holyfields side of the CI gate contract defined in
-# the metarepo test plan (33GOD/docs/testing/test-plan.md).
-#
-# What this gates on every PR / push to main:
-#   1. JSON Schemas validate as JSON Schema 2020-12
-#   2. All schemas resolve their $refs
-#   3. Python generator produces output for every schema
-#   4. TypeScript generator produces output for every schema
-#   5. Generated artifacts match the committed versions (no drift)
-#   6. The CloudEvents v3 base envelope round-trips cleanly (11 cases)
-#   7. TypeScript typechecks
-#
-# Replaces the older schema-drift.yml; this is the comprehensive gate.
-
 name: CI
 
 on:
@@ -27,10 +11,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  schema-and-generators:
-    name: Schemas + generators + drift + tests
+  contracts:
+    name: Schemas, generated packages, and drift
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v4
@@ -46,84 +30,47 @@ jobs:
           node-version: "20"
 
       - name: Install uv
-        # uv is the Python project + dep manager. mise.toml uses it locally
-        # but CI uses pip-installed uv (one fewer layer than mise).
         run: pip install --upgrade pip uv
 
       - name: Install bun
-        # bun is the TS package manager + test runner. Used by the
-        # TypeScript generator (json-schema-to-zod) and the typecheck step.
         run: |
           curl -fsSL https://bun.sh/install | bash
-          echo "$HOME/.bun/bin" >> $GITHUB_PATH
+          echo "$HOME/.bun/bin" >> "$GITHUB_PATH"
 
-      - name: Install Python deps (uv sync --all-extras)
-        # --all-extras pulls dev deps too (pytest, mypy, etc.) which the
-        # CloudEvents test step needs. Plain `uv sync` skips optional
-        # dependency groups by default.
-        run: uv sync --all-extras
+      - name: Install dependencies
+        run: |
+          uv sync --all-groups --all-packages
+          bun install --frozen-lockfile
 
-      - name: Install TypeScript deps (bun install)
-        run: bun install --frozen-lockfile
-
-      # -----------------------------------------------------------------------
-      # Layer 1: schemas validate as JSON Schema 2020-12 with $refs resolved
-      # -----------------------------------------------------------------------
       - name: Validate JSON Schemas
-        # `uv run` activates the project venv so the inline `import jsonschema`
-        # in validate_schemas.sh resolves. Plain `bash` would use the system
-        # Python (from setup-python) which has no project deps.
         run: uv run bash scripts/validate_schemas.sh
 
-      # -----------------------------------------------------------------------
-      # Layer 2: generators produce output for every schema
-      # -----------------------------------------------------------------------
-      - name: Generate Python (Pydantic)
-        run: uv run bash scripts/generate_python.sh
-
-      - name: Generate TypeScript (Zod)
-        # No Python deps; bash + bun are sufficient.
-        run: bash scripts/generate_typescript.sh
-
-      # -----------------------------------------------------------------------
-      # Layer 3: generated output matches committed versions (no drift)
-      # -----------------------------------------------------------------------
-      # We check both the Python output (under src/holyfields/generated/) and
-      # the TypeScript output (under generated/typescript/). If a schema was
-      # edited without re-running the generator, this catches it.
-      - name: Check Python drift
+      - name: Generate committed artifacts
         run: |
-          if ! git diff --exit-code -- src/holyfields/generated/; then
-            echo ""
-            echo "❌ Python schema drift detected"
-            echo "Run: bash scripts/generate_python.sh && git add src/holyfields/generated/"
+          uv run python tools/generators/generate_pydantic.py
+          bash scripts/generate_typescript.sh
+
+      - name: Check generated drift
+        run: |
+          if ! git diff --exit-code -- packages/python/src/holyfields/generated packages/python/src/holyfields/schemas packages/typescript/src/generated; then
+            echo "Generated artifacts are out of sync. Run: mise run generate:all"
             exit 1
           fi
-          echo "✅ No Python drift"
 
-      - name: Check TypeScript drift
-        run: |
-          if ! git diff --exit-code -- generated/typescript/; then
-            echo ""
-            echo "❌ TypeScript schema drift detected"
-            echo "Run: bash scripts/generate_typescript.sh && git add generated/typescript/"
-            exit 1
-          fi
-          echo "✅ No TypeScript drift"
+      - name: Typecheck Python
+        run: uv run mypy packages/python/src/holyfields tools/generators
 
-      # -----------------------------------------------------------------------
-      # Layer 4: contract tests
-      # -----------------------------------------------------------------------
-      # Runs every top-level v3 contract test file. The legacy `tests/python/`
-      # tree (test_agent_learning_models.py, test_generated_models.py,
-      # test_transcription_events.py) has pre-existing collection errors
-      # documented in the metarepo test plan as known debt; `--ignore` keeps
-      # it out of the gate. Re-fold once the legacy modules collect cleanly.
-      - name: Run v3 contract tests
-        run: uv run pytest tests/ --ignore=tests/python -v --no-cov
+      - name: Typecheck TypeScript
+        run: cd packages/typescript && bun run typecheck
 
-      # -----------------------------------------------------------------------
-      # Layer 5: TypeScript typecheck
-      # -----------------------------------------------------------------------
-      - name: TypeScript typecheck
-        run: bun run typecheck
+      - name: Test Python
+        run: uv run --package holyfields pytest packages/python/tests
+
+      - name: Test TypeScript
+        run: cd packages/typescript && bun test
+
+      - name: Build Python package
+        run: uv build --package holyfields
+
+      - name: Build TypeScript package
+        run: cd packages/typescript && bun pm pack

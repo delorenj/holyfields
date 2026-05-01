@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://33god.dev/schemas/agent/learning/candidate.extracted.v1.json",
+  "title": "Agent Learning Candidate Extracted Event",
+  "description": "Candidate lesson extracted from repeated or high-signal episodes",
+  "type": "object",
+  "allOf": [
+    { "$ref": "../../_common/base_event.v1.json" }
+  ],
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "const": "agent.learning.candidate.extracted",
+      "description": "Event type discriminator"
+    },
+    "payload": {
+      "type": "object",
+      "properties": {
+        "candidate_id": {
+          "$ref": "../../_common/types.v1.json#/$defs/uuid",
+          "description": "Stable identifier for the candidate lesson"
+        },
+        "rule_text": {
+          "type": "string",
+          "description": "Operational lesson text proposed for validation"
+        },
+        "supporting_episode_ids": {
+          "type": "array",
+          "items": {
+            "$ref": "../../_common/types.v1.json#/$defs/uuid"
+          },
+          "description": "Episodes that justify the candidate lesson"
+        },
+        "scope_skills": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Skills or agent surfaces the lesson could apply to"
+        },
+        "trigger_tags": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Tags used to decide when to retrieve this lesson"
+        },
+        "priority": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"],
+          "description": "Promotion priority for the candidate lesson"
+        },
+        "rationale": {
+          "type": ["string", "null"],
+          "description": "Why the candidate is worth validating"
+        }
+      },
+      "required": ["candidate_id", "rule_text", "supporting_episode_ids", "scope_skills", "priority"]
+    }
+  },
+  "required": ["event_type", "payload"]
+}

@@ -1,218 +1,93 @@
 # Holyfields
 
-Event schema registry and contract system for the 33GOD ecosystem.
+Holyfields is the schema registry and contract package workspace for 33GOD.
+JSON Schema is the source of truth. Python and TypeScript packages are generated
+from those schemas and published as language-specific bindings.
 
-## Overview
+## Repository model
 
-Holyfields provides a single source of truth for event schemas shared across 33GOD microservices. It auto-generates language-specific artifacts (Python Pydantic, TypeScript Zod) from JSON Schema definitions, enabling independent component development with guaranteed schema compatibility.
+Holyfields is one repository with package-per-language boundaries. Keep the
+schemas centralized so contract changes generate, test, and drift-check across
+all supported languages in one CI gate.
 
-## Problem Solved
+- `schemas/` contains versioned JSON Schemas.
+- `packages/python/` publishes the `holyfields` Python package.
+- `packages/typescript/` publishes the `@33god/holyfields` npm package.
+- `tools/generators/` contains deterministic language generators.
+- `scripts/` contains stable wrapper commands used by `mise` and CI.
 
-When developing TheBoard (Python backend) and TheBoardroom (TypeScript frontend) in parallel, event schema mismatches caused silent failures, missing UI updates, and fake mocked behavior. Holyfields catches these at build time through contract validation.
+Do not split Python and TypeScript into separate repositories unless release
+ownership becomes fully independent. Today, atomic schema review is more
+important than per-language repo autonomy.
 
-## Quick Start
+## Commands
 
-```bash
-# Install dependencies
-mise run install
+Use `mise` from the repository root.
 
-# Validate schemas
-mise run validate:schemas
+| Task | Command |
+| --- | --- |
+| Install dependencies | `mise run install` |
+| Validate schemas | `mise run validate:schemas` |
+| Generate Python | `mise run generate:python` |
+| Generate TypeScript | `mise run generate:typescript` |
+| Generate all artifacts | `mise run generate:all` |
+| Check generated drift | `mise run check:drift` |
+| Test Python | `mise run test:python` |
+| Test TypeScript | `mise run test:typescript` |
+| Test all packages | `mise run test:all` |
+| Typecheck packages | `mise run typecheck` |
+| Build packages | `mise run build` |
+| Full CI | `mise run ci` |
 
-# Generate all language artifacts
-mise run generate:all
+## Package usage
 
-# Run contract tests
-mise run test:all
+Use the generated language package that matches your service runtime.
 
-# Full CI validation
-mise run ci
-```
-
-## Directory Structure
-
-```
-holyfields/
-├── common/schemas/          # Shared base types and enums
-├── theboard/               # TheBoard component contracts
-│   ├── events/            # Event schemas (immutable)
-│   └── commands/          # Command schemas (mutable)
-├── theboardroom/          # TheBoardroom component contracts
-│   └── events/            # Consumer-side event schemas
-├── generated/             # Auto-generated language artifacts
-│   ├── python/           # Pydantic models
-│   └── typescript/       # Zod schemas + TS types
-├── tests/                # Contract validation tests
-│   ├── python/          # pytest suites
-│   └── typescript/      # vitest suites
-├── docs/                # Documentation
-│   ├── catalog/        # Per-event docs
-│   ├── guides/         # Integration guides
-│   └── integration-tickets/  # Cross-repo coordination tickets
-└── scripts/            # Generation + validation scripts
-```
-
-## Schema Definition
-
-Schemas are defined in JSON Schema Draft 2020-12 format:
-
-```json
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://33god.dev/schemas/theboard/events/meeting_created.json",
-  "type": "object",
-  "title": "Meeting Created Event",
-  "description": "Emitted when a new meeting is created",
-  "properties": {
-    "event_type": {
-      "type": "string",
-      "const": "theboard.meeting.created"
-    },
-    "meeting_id": {
-      "type": "string",
-      "format": "uuid"
-    },
-    "topic": {
-      "type": "string",
-      "description": "Meeting topic/question"
-    }
-  },
-  "required": ["event_type", "meeting_id", "topic"]
-}
-```
-
-## Code Generation
-
-### Python (Pydantic)
-
-```bash
-mise run generate:python
-```
-
-Generates type-safe Pydantic models in `generated/python/`:
+Python services import Pydantic models from `holyfields.generated`.
 
 ```python
-from generated.python.theboard.events import MeetingCreatedEvent
-
-event = MeetingCreatedEvent(
-    event_type="theboard.meeting.created",
-    meeting_id="...",
-    topic="AI safety"
-)
+from holyfields.generated.agent.session_started_v1 import AgentSessionStartedV1
 ```
 
-### TypeScript (Zod)
+TypeScript services and frontends import Zod schemas from `@33god/holyfields`.
 
-```bash
-mise run generate:typescript
+```ts
+import { AgentSessionStartedV1Schema } from "@33god/holyfields";
 ```
 
-Generates Zod schemas and TypeScript types in `generated/typescript/`:
+Published packages include raw JSON Schemas for consumers that need runtime
+schema validation or registry synchronization.
 
-```typescript
-import { MeetingCreatedEventSchema } from './generated/typescript/theboard/events';
+## Development workflow
 
-const event = MeetingCreatedEventSchema.parse(rawData);
-```
+Make contract changes through the schema source of truth.
 
-## Contract Validation
+1. Edit JSON Schema files in `schemas/`.
+2. Run `mise run validate:schemas`.
+3. Run `mise run generate:all`.
+4. Run `mise run check:drift`.
+5. Run `mise run ci` before opening a pull request.
 
-Contract tests ensure generated artifacts match schema expectations:
+Generated code is committed on purpose. Reviewers must be able to see the exact
+consumer-facing Python and TypeScript changes caused by a schema edit.
 
-```bash
-# Python tests
-mise run test:python
+## Adding another language
 
-# TypeScript tests
-mise run test:typescript
+Add each new language as `packages/<language>`. The package must provide the
+same contract as the existing packages:
 
-# All tests
-mise run test:all
-```
+- A deterministic generator that writes only inside that package.
+- Committed generated artifacts.
+- Package-specific tests and type checks.
+- A build command that produces a publishable artifact.
+- A root `mise` task wired into `generate:all`, `test:all`, `typecheck`,
+  `check:drift`, and `ci`.
 
-## Versioning
+## Non-negotiables
 
-Each component directory uses independent semantic versioning:
-
-- **Major**: Breaking changes (field removal, type change)
-- **Minor**: Additive changes (new optional field)
-- **Patch**: Documentation/comment changes
-
-Version tracked in component metadata file (e.g., `theboard/version.json`).
-
-## Integration Workflow
-
-1. **Define Schema**: Add/modify JSON Schema in component directory
-2. **Validate**: Pre-commit hook validates schema structure
-3. **Generate**: CI generates Python and TypeScript artifacts
-4. **Test**: Contract tests validate generated code
-5. **Consume**: Dependent services import generated artifacts
-
-## Cross-Repo Coordination
-
-For changes affecting external teams (like theboard), see:
-
-- `docs/integration-tickets/` - Detailed tickets for external teams
-- Each ticket includes schema changes, migration guide, and acceptance criteria
-
-## CI Integration
-
-GitHub Actions workflow (`ci validate-contracts.yml`) runs on every PR:
-
-- Schema validation
-- Code generation
-- Contract tests
-- Breaking change detection
-
-## Tech Stack
-
-- **Schema Format**: JSON Schema Draft 2020-12
-- **Python Generation**: datamodel-code-generator
-- **TypeScript Generation**: json-schema-to-zod
-- **Python Validation**: jsonschema + pytest
-- **TypeScript Validation**: ajv + vitest
-- **Task Runner**: mise
-- **Package Managers**: uv (Python), bun (TypeScript)
-
-## Current Components
-
-- **common/**: Base types, enums, shared structures
-- **theboard/**: Meeting orchestration events (7 events)
-- **theboardroom/**: Visualization consumer events
-
-## Future Components
-
-- flume/
-- holocene/
-- imi/
-- jelmore/
-- 00_ceiling/
-- yi/
-- zellij-driver/
-- candybar/
-
-## Contributing
-
-1. Define schema in appropriate component directory
-2. Run `mise run validate:schemas`
-3. Run `mise run generate:all`
-4. Run `mise run test:all`
-5. Commit schema + generated artifacts
-6. CI validates on PR
-
-## Related Documentation
-
-- [Product Brief](docs/product-brief-holyfields-2026-01-14.md)
-- [Technical Specification](docs/tech-spec-holyfields-2026-01-14.md)
-- [Sprint Plan](docs/sprint-plan-holyfields-2026-01-14.md)
-- [Event Catalog](docs/catalog/) (per-event documentation)
-
-## Project Status
-
-- **Version**: 0.1.0
-- **Status**: In Development (Sprint 1)
-- **Target**: Unblock TheBoard/TheBoardroom integration
-
-## Contact
-
-Jarad DeLorenzo - 33GOD Ecosystem
+- JSON Schema is the only source of truth.
+- Never hand-edit generated package artifacts.
+- Never keep generated drift in a pull request.
+- Never exclude broken legacy tests from CI; delete, replace, or fix them.
+- Keep `README.md`, `AGENTS.md`, `GOD.md`, and CI aligned with the package
+  layout.

@@ -1,46 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Schema Drift Check
-# Regenerates Pydantic models from JSON schemas and fails if any differ
-# from the committed versions. This ensures schemas and generated code
-# stay in sync.
-#
-# Usage: bash scripts/check_drift.sh
-# Exit code: 0 = no drift, 1 = drift detected
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-echo "🔍 Schema drift check: regenerating models..."
+echo "Schema drift check: regenerating all committed language artifacts"
 
-# Run the generator
-python3 "$SCRIPT_DIR/generate_pydantic.py" 2>&1 | tail -3
-
-# Check for differences
-echo ""
-echo "🔍 Checking for drift..."
+bash "$PROJECT_ROOT/scripts/generate_python.sh"
+bash "$PROJECT_ROOT/scripts/generate_typescript.sh"
 
 cd "$PROJECT_ROOT"
 
-if git diff --exit-code -- src/holyfields/generated/ > /dev/null 2>&1; then
-    echo "✅ No schema drift detected — generated models match committed versions"
-    exit 0
-else
+if ! git diff --exit-code -- packages/python/src/holyfields/generated packages/python/src/holyfields/schemas packages/typescript/src/generated > /dev/null 2>&1; then
     echo ""
-    echo "❌ SCHEMA DRIFT DETECTED"
+    echo "Schema drift detected"
     echo ""
-    echo "The following generated files differ from the committed versions:"
+    git diff --stat -- packages/python/src/holyfields/generated packages/python/src/holyfields/schemas packages/typescript/src/generated
     echo ""
-    git diff --stat -- src/holyfields/generated/
-    echo ""
-    echo "This means JSON schemas were modified without regenerating Pydantic models."
-    echo ""
-    echo "To fix:"
-    echo "  1. cd holyfields"
-    echo "  2. python3 scripts/generate_pydantic.py"
-    echo "  3. git add src/holyfields/generated/"
-    echo "  4. git commit --amend (or new commit)"
-    echo ""
+    echo "Regenerate artifacts and commit the result:"
+    echo "  mise run generate:all"
     exit 1
 fi
+
+echo "No schema drift detected"
