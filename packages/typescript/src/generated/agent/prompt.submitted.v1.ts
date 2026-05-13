@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-/**Emitted when a user submits a prompt to an agent. Producer is the agent runtime (e.g. Claude Code via .claude/hooks/bloodbank-publisher.sh on UserPromptSubmit). Carries the raw prompt text alongside repo state at submission time. Consumers use it to attribute downstream tool invocations to a user intent and to build retrospective views of what was asked.*/
+/**Emitted when a user submits a prompt to an agent. Producer is the agent runtime (e.g. Claude Code via bloodbank/services/agent-hooks/claude/publish.py on UserPromptSubmit). Carries the raw prompt text alongside repo state at submission time. Consumers use it to attribute downstream tool invocations to a user intent and to build retrospective views of what was asked.*/
 export const AgentPromptSubmittedV1Schema = z.object({ 
 /**Locked event type for this schema.*/
 "type": z.literal("agent.prompt.submitted").describe("Locked event type for this schema.").optional(), 
@@ -17,5 +17,5 @@ export const AgentPromptSubmittedV1Schema = z.object({
 /**Absolute path the agent is operating in at prompt-submit time.*/
 "working_directory": z.string().describe("Absolute path the agent is operating in at prompt-submit time.").optional(), 
 /**Git branch at prompt-submit time. Empty string when not in a git repo.*/
-"git_branch": z.string().describe("Git branch at prompt-submit time. Empty string when not in a git repo.").optional() }).strict().describe("Prompt-submission payload.") }).and(z.any()).describe("Emitted when a user submits a prompt to an agent. Producer is the agent runtime (e.g. Claude Code via .claude/hooks/bloodbank-publisher.sh on UserPromptSubmit). Carries the raw prompt text alongside repo state at submission time. Consumers use it to attribute downstream tool invocations to a user intent and to build retrospective views of what was asked.")
+"git_branch": z.string().describe("Git branch at prompt-submit time. Empty string when not in a git repo.").optional() }).strict().describe("Prompt-submission payload.") }).and(z.any()).describe("Emitted when a user submits a prompt to an agent. Producer is the agent runtime (e.g. Claude Code via bloodbank/services/agent-hooks/claude/publish.py on UserPromptSubmit). Carries the raw prompt text alongside repo state at submission time. Consumers use it to attribute downstream tool invocations to a user intent and to build retrospective views of what was asked.")
 export type AgentPromptSubmittedV1 = z.infer<typeof AgentPromptSubmittedV1Schema>

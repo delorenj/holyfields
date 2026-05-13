@@ -15,7 +15,7 @@ class AgentSubagentCompletedV1Data(BaseModel):
     working_directory: str | None = Field(None, description='Absolute path the parent session was operating in when the subagent finished.')
 
 class AgentSubagentCompletedV1(BaseModel):
-    """Emitted when a subagent (a Task-tool spawned helper) finishes. Producer is the agent runtime (e.g. Claude Code via .claude/hooks/bloodbank-publisher.sh on SubagentStop). Distinct from agent.session.ended: the parent session continues; only the subagent has terminated. The session_id field points to the PARENT session so subagent activity rolls up under the originating session."""
+    """Emitted when a subagent (a Task-tool spawned helper) finishes. Producer is the agent runtime (e.g. Claude Code via bloodbank/services/agent-hooks/claude/publish.py on SubagentStop). Distinct from agent.session.ended: the parent session continues; only the subagent has terminated. The session_id field points to the PARENT session so subagent activity rolls up under the originating session."""
 
     specversion: Literal['1.0'] = Field(..., description="CloudEvents specification version. Always '1.0' for v3.")
     id: str = Field(..., description='Unique identifier for this event. Consumers dedup on this. Set by producer; Dapr preserves.')

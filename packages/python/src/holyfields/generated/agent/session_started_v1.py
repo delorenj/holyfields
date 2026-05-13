@@ -16,7 +16,7 @@ class AgentSessionStartedV1Data(BaseModel):
     started_at: str = Field(..., description='RFC3339 UTC timestamp at which the session began. Producers should set this to match the envelope `time` field.')
 
 class AgentSessionStartedV1(BaseModel):
-    """Emitted when an agent session begins. Producer is typically the agent runtime itself (e.g., Claude Code via .claude/hooks/bloodbank-publisher.sh on SessionStart). Consumers track session lifecycle, attribute downstream events to a session, and aggregate per-session metrics."""
+    """Emitted when an agent session begins. Producer is typically the agent runtime itself (e.g., Claude Code via bloodbank/services/agent-hooks/claude/publish.py on SessionStart). Consumers track session lifecycle, attribute downstream events to a session, and aggregate per-session metrics."""
 
     specversion: Literal['1.0'] = Field(..., description="CloudEvents specification version. Always '1.0' for v3.")
     id: str = Field(..., description='Unique identifier for this event. Consumers dedup on this. Set by producer; Dapr preserves.')

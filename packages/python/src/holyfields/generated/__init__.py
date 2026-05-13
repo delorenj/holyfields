@@ -40,6 +40,13 @@ from .command.ack_v1 import CommandAckV1
 from .command.envelope_v1 import CommandEnvelopeV1
 from .command.error_v1 import CommandErrorV1
 from .command.result_v1 import CommandResultV1
+from .copilot.agent_stopped_v1 import CopilotAgentStoppedV1
+from .copilot.error_occurred_v1 import CopilotErrorOccurredV1
+from .copilot.prompt_submitted_v1 import CopilotPromptSubmittedV1
+from .copilot.session_ended_v1 import CopilotSessionEndedV1
+from .copilot.session_started_v1 import CopilotSessionStartedV1
+from .copilot.tool_post_v1 import CopilotToolPostV1
+from .copilot.tool_pre_v1 import CopilotToolPreV1
 from .fireflies.transcript.failed_v1 import FirefliesTranscriptFailedV1
 from .fireflies.transcript.processed_v1 import FirefliesTranscriptProcessedV1
 from .fireflies.transcript.ready_v1 import FirefliesTranscriptReadyV1
@@ -100,6 +107,13 @@ __all__ = [
     "CommandEnvelopeV1",
     "CommandErrorV1",
     "CommandResultV1",
+    "CopilotAgentStoppedV1",
+    "CopilotErrorOccurredV1",
+    "CopilotPromptSubmittedV1",
+    "CopilotSessionEndedV1",
+    "CopilotSessionStartedV1",
+    "CopilotToolPostV1",
+    "CopilotToolPreV1",
     "FirefliesTranscriptFailedV1",
     "FirefliesTranscriptProcessedV1",
     "FirefliesTranscriptReadyV1",
